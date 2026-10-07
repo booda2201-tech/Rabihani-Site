@@ -1,0 +1,29 @@
+<section id="download" #root class="relative py-24 lg:py-32">
+  <div class="container-x">
+    <div data-dl-card class="relative mx-auto max-w-5xl overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#10204f] via-[#0b1433] to-ink p-8 ring-1 ring-white/10 sm:p-10 lg:px-14 lg:py-12">
+      <div class="pointer-events-none absolute -left-20 -top-20 h-80 w-80 rounded-full bg-bid/30 blur-[100px]"></div>
+      <div class="pointer-events-none absolute -bottom-24 -right-10 h-72 w-72 rounded-full bg-gold/20 blur-[100px]"></div>
+
+      <div class="relative grid items-center gap-12 lg:grid-cols-[1fr_auto]">
+        <div class="text-center lg:text-right">
+          <div data-dl class="flex justify-center lg:justify-start"><app-logo></app-logo></div>
+          <h2 data-dl class="mt-6 text-3xl font-bold leading-snug text-white sm:text-4xl">
+            الجايزة مستنياك.<br />
+            <span class="text-gold-gradient">التطبيق الأول.</span>
+          </h2>
+          <p data-dl class="mx-auto mt-5 max-w-lg text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0">اكسب النقاط واستبدلها بمنتجات. حمّل ربحني دلوقتي، وأول مسحة QR تحطك في السباق.</p>
+          <div data-dl class="mt-8 flex justify-center lg:justify-start">
+            <app-store-buttons></app-store-buttons>
+          </div>
+        </div>
+
+        <div data-dl-qr class="mx-auto flex flex-col items-center [perspective:800px]">
+          <div class="rounded-3xl bg-white p-3 shadow-glow-gold">
+            <app-qr-code class="block h-36 w-36 sm:h-40 sm:w-40" [value]="qrValue" alt="QR تحميل تطبيق ربحني"></app-qr-code>
+          </div>
+          <p class="mt-4 text-sm font-bold text-slate-300">امسح وحمّل من موبايلك</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

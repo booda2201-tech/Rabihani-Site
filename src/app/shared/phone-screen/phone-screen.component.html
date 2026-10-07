@@ -1,0 +1,211 @@
+<div class="relative flex h-full w-full flex-col overflow-hidden bg-gradient-to-b from-[#0d1322] to-night text-[11px] text-slate-200" dir="rtl">
+  <!-- status bar -->
+  <div class="relative z-20 flex items-center justify-between px-6 pt-3 text-[10px] font-semibold text-white/90" dir="ltr">
+    <span>9:41</span>
+    <span class="flex items-center gap-1">
+      <span class="flex items-end gap-[2px]"><i class="h-1 w-[3px] rounded-sm bg-white"></i><i class="h-1.5 w-[3px] rounded-sm bg-white"></i><i class="h-2 w-[3px] rounded-sm bg-white"></i><i class="h-2.5 w-[3px] rounded-sm bg-white/40"></i></span>
+      <span class="ml-1 h-2.5 w-5 rounded-[3px] border border-white/70 p-[1px]"><i class="block h-full w-3/4 rounded-[1px] bg-white"></i></span>
+    </span>
+  </div>
+
+  <div class="relative flex-1 overflow-hidden px-3.5 pt-4" [ngSwitch]="screen">
+    <!-- ============ HOME ============ -->
+    <ng-container *ngSwitchCase="'home'">
+      <div class="mb-3 flex items-center justify-between">
+        <div>
+          <p class="text-[10px] text-slate-400">أهلاً بيك</p>
+          <p class="text-sm font-bold text-white">جاهز تزايد؟</p>
+        </div>
+        <span class="grid h-8 w-8 place-items-center rounded-full bg-white/5 text-slate-300 ring-1 ring-white/10"><app-icon name="bell" class="h-4 w-4"></app-icon></span>
+      </div>
+
+      <div class="mb-3 h-20 overflow-hidden rounded-2xl bg-card ring-1 ring-white/5">
+        <ng-container *ngIf="ads$ | async as ads">
+          <img *ngIf="ads.length" [src]="ads[0].imageUrl" [alt]="ads[0].title" class="h-full w-full object-cover" loading="lazy" />
+        </ng-container>
+      </div>
+
+      <div class="mb-3 flex items-center justify-between rounded-2xl bg-gradient-to-l from-bid to-blue-800 p-3 shadow-glow">
+        <div>
+          <p class="text-[10px] text-blue-100/80">رصيدك</p>
+          <p class="text-lg font-bold text-white tabular-nums">1,250 <span class="text-[10px] font-semibold">نقطة</span></p>
+        </div>
+        <span class="flex items-center gap-1 rounded-xl bg-white/15 px-2.5 py-1.5 font-semibold text-white"><app-icon name="qr" class="h-4 w-4"></app-icon>إضافة نقاط</span>
+      </div>
+
+      <div class="mb-3 flex gap-1.5 overflow-hidden">
+        <span *ngFor="let c of categories; let first = first" class="whitespace-nowrap rounded-full px-2.5 py-1 text-[10px] font-semibold" [ngClass]="first ? 'bg-bid text-white' : 'bg-white/5 text-slate-300'">{{ c.label }}</span>
+      </div>
+
+      <p class="mb-2 text-xs font-bold text-white">مزادات نشطة</p>
+      <ng-container *ngIf="auctions$ | async as list">
+        <div *ngFor="let a of list.slice(0, 2)" class="mb-2 flex items-center gap-2.5 rounded-2xl bg-card p-2 ring-1 ring-white/5">
+          <span class="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/5"><img [src]="a.product.imageUrl" [alt]="a.name" class="h-10 w-10 object-contain" loading="lazy" /></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-semibold text-white" dir="auto">{{ a.name }}</p>
+            <p class="text-[10px] text-bid">تبدأ من {{ a.startPoints | number }} نقطة</p>
+          </div>
+          <span class="rounded-lg bg-white/5 px-1.5 py-1 text-[9px] text-gold-light"><app-countdown [end]="a.endTime" variant="inline"></app-countdown></span>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <!-- ============ MY AUCTIONS ============ -->
+    <ng-container *ngSwitchCase="'auctions'">
+      <p class="mb-3 text-sm font-bold text-white">مزاداتي</p>
+      <div class="mb-4 rounded-2xl bg-gradient-to-l from-gold-light via-gold to-gold-dark p-3 text-ink">
+        <p class="text-[10px] font-semibold opacity-70">رصيد الولاء</p>
+        <p class="text-xl font-bold tabular-nums">1,250 <span class="text-[10px]">نقطة</span></p>
+        <p class="mt-1 text-[10px] font-semibold opacity-70">المستوى Bronze</p>
+      </div>
+      <p class="mb-2 text-xs font-bold text-white">مزايداتي النشطة</p>
+      <ng-container *ngIf="auctions$ | async as list">
+        <div *ngFor="let a of list.slice(0, 3); let i = index" class="mb-2 flex items-center gap-2.5 rounded-2xl bg-card p-2 ring-1 ring-white/5">
+          <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/5"><img [src]="a.product.imageUrl" [alt]="a.name" class="h-8 w-8 object-contain" loading="lazy" /></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate font-semibold text-white" dir="auto">{{ a.name }}</p>
+            <p class="text-[10px]" [ngClass]="i === 0 ? 'text-emerald-400' : 'text-amber-400'">{{ i === 0 ? 'إنت الأعلى دلوقتي' : 'حد زايد عليك' }}</p>
+          </div>
+          <span class="text-[9px] text-slate-400"><app-countdown [end]="a.endTime" variant="inline"></app-countdown></span>
+        </div>
+      </ng-container>
+      <p class="mb-2 mt-3 text-xs font-bold text-white">مزادات ربحتها</p>
+      <div class="grid place-items-center rounded-2xl border border-dashed border-gold/40 p-3 text-center">
+        <app-icon name="trophy" class="mb-1 h-6 w-6 text-gold"></app-icon>
+        <p class="font-semibold text-gold-light">أول جايزة ليك مستنياك</p>
+      </div>
+    </ng-container>
+
+    <!-- ============ COMPANIES ============ -->
+    <ng-container *ngSwitchCase="'companies'">
+      <p class="mb-1 text-sm font-bold text-white">شركاتي</p>
+      <p class="mb-3 text-[10px] text-slate-400">اشتري من هنا، امسح، واكسب</p>
+      <div *ngFor="let p of partners" class="mb-2 flex items-center gap-2.5 rounded-2xl bg-card p-2.5 ring-1 ring-white/5">
+        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-sm font-bold text-white" [style.background]="'linear-gradient(135deg,' + p.from + ',' + p.to + ')'">{{ p.mark }}</span>
+        <div class="min-w-0 flex-1">
+          <p class="truncate font-semibold text-white">{{ p.name }}</p>
+          <p class="truncate text-[10px] text-slate-400">{{ p.kind }}</p>
+        </div>
+        <span class="flex items-center gap-1 rounded-lg bg-bid/15 px-2 py-1 text-[10px] font-semibold text-bid"><app-icon name="qr" class="h-3 w-3"></app-icon>امسح</span>
+      </div>
+    </ng-container>
+
+    <!-- ============ PROFILE ============ -->
+    <ng-container *ngSwitchCase="'profile'">
+      <div class="mb-4 flex flex-col items-center pt-2 text-center">
+        <span class="mb-2 grid h-16 w-16 place-items-center rounded-full bg-gradient-to-br from-bid to-blue-900 text-xl font-bold text-white ring-2 ring-gold">ر</span>
+        <p class="text-sm font-bold text-white">ضيف ربحني</p>
+        <span class="mt-1 rounded-full bg-gradient-to-l from-[#cd7f32] to-[#8a5a2b] px-2.5 py-0.5 text-[10px] font-bold text-white">Bronze</span>
+      </div>
+      <div class="mb-3 grid grid-cols-2 gap-2">
+        <div class="rounded-2xl bg-card p-2.5 ring-1 ring-white/5">
+          <p class="text-[10px] text-slate-400">النقاط</p>
+          <p class="text-base font-bold text-white tabular-nums">1,250</p>
+        </div>
+        <div class="rounded-2xl bg-card p-2.5 ring-1 ring-white/5">
+          <p class="text-[10px] text-slate-400">المحفظة</p>
+          <p class="text-base font-bold text-gold-light tabular-nums">350</p>
+        </div>
+      </div>
+      <p class="mb-2 text-xs font-bold text-white">سجل المزايدات</p>
+      <ng-container *ngIf="auctions$ | async as list">
+        <div *ngFor="let a of list.slice(0, 3)" class="flex items-center justify-between border-b border-white/5 py-2">
+          <span class="truncate font-semibold text-slate-200" dir="auto">{{ a.name }}</span>
+          <span class="shrink-0 text-[10px] font-semibold text-bid">{{ a.startPoints | number }} نقطة</span>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <!-- ============ SPLASH ============ -->
+    <ng-container *ngSwitchCase="'splash'">
+      <div class="absolute inset-0 -top-10 grid place-items-center bg-[radial-gradient(circle_at_50%_40%,#13245a_0%,#050816_70%)]">
+        <div class="flex flex-col items-center gap-6">
+          <app-logo size="md"></app-logo>
+          <span class="relative h-1.5 w-32 overflow-hidden rounded-full bg-white/10">
+            <span class="absolute inset-y-0 right-0 w-2/3 rounded-full bg-gradient-to-l from-gold-light via-gold to-gold-dark"></span>
+          </span>
+          <p class="text-[10px] font-semibold text-slate-400">اكسب النقاط واستبدلها بمنتجات</p>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ============ PERSONAL QR ============ -->
+    <ng-container *ngSwitchCase="'qr'">
+      <div class="flex h-full flex-col items-center pt-4 text-center">
+        <p class="text-sm font-bold text-white">الكود بتاعك</p>
+        <p class="mb-5 text-[10px] text-slate-400">ورّيه للشريك عشان النقاط تتسجل باسمك</p>
+        <div class="rounded-3xl bg-white p-3 shadow-glow-gold">
+          <app-qr-code class="block h-40 w-40" value="RABIHANI-MEMBER-PREVIEW" alt="QR شخصي"></app-qr-code>
+        </div>
+        <p class="mt-4 rounded-full bg-white/5 px-3 py-1 font-semibold tabular-nums text-gold-light" dir="ltr">RB-2026-0417</p>
+      </div>
+    </ng-container>
+
+    <!-- ============ SCAN (how to earn #1) ============ -->
+    <ng-container *ngSwitchCase="'scan'">
+      <div class="absolute inset-0 -top-10 bg-[radial-gradient(circle_at_50%_45%,#1e293b_0%,#020617_75%)]">
+        <div class="absolute left-1/2 top-[26%] h-44 w-44 -translate-x-1/2">
+          <span class="absolute right-0 top-0 h-8 w-8 rounded-tr-2xl border-r-4 border-t-4 border-gold"></span>
+          <span class="absolute left-0 top-0 h-8 w-8 rounded-tl-2xl border-l-4 border-t-4 border-gold"></span>
+          <span class="absolute bottom-0 right-0 h-8 w-8 rounded-br-2xl border-b-4 border-r-4 border-gold"></span>
+          <span class="absolute bottom-0 left-0 h-8 w-8 rounded-bl-2xl border-b-4 border-l-4 border-gold"></span>
+          <div class="absolute inset-5 rounded-xl bg-white p-2 opacity-90">
+            <app-qr-code class="block h-full w-full" value="RABIHANI-PARTNER-BUBBLEHOPE" alt="QR الشريك"></app-qr-code>
+          </div>
+          <span class="absolute inset-x-3 h-0.5 animate-scan rounded-full bg-bid shadow-[0_0_14px_3px_rgba(59,130,246,.8)]"></span>
+        </div>
+        <div class="absolute inset-x-4 bottom-8 rounded-2xl bg-white/10 p-3 text-center backdrop-blur">
+          <p class="font-bold text-white">وجّه الكاميرا على كود الشريك</p>
+          <p class="mt-0.5 text-[10px] text-slate-300">Bubblehope · FORTO · T4TEA</p>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ============ WALLET (how to earn #2) ============ -->
+    <ng-container *ngSwitchCase="'wallet'">
+      <div class="flex h-full flex-col items-center pt-8 text-center">
+        <span class="mb-4 grid h-20 w-20 place-items-center rounded-full bg-emerald-500/15 text-emerald-400 ring-8 ring-emerald-500/5"><app-icon name="check" [stroke]="2.5" class="h-10 w-10"></app-icon></span>
+        <p class="text-base font-bold text-white">النقاط دخلت محفظتك</p>
+        <p class="mb-5 text-[10px] text-slate-400">من Bubblehope · دلوقتي</p>
+        <div class="w-full rounded-2xl bg-gradient-to-l from-bid to-blue-800 p-4 text-right shadow-glow">
+          <p class="text-[10px] text-blue-100/80">رصيدك الجديد</p>
+          <p class="text-2xl font-bold text-white tabular-nums">1,250 <span class="text-xs">نقطة</span></p>
+          <p class="mt-1 inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold text-white"><app-icon name="bolt" class="h-3 w-3"></app-icon>نقاط جديدة اتضافت</p>
+        </div>
+        <div class="mt-3 w-full rounded-2xl bg-card p-3 text-right ring-1 ring-white/5">
+          <p class="text-[10px] text-slate-400">كفاية تدخل مزاد يبدأ من</p>
+          <p class="font-bold text-gold-light">
+            <ng-container *ngIf="featured$ | async as f">{{ f.startPoints | number }} نقطة</ng-container>
+          </p>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- ============ BID (how to earn #3) ============ -->
+    <ng-container *ngSwitchCase="'bid'">
+      <ng-container *ngIf="featured$ | async as f">
+        <div class="relative mb-3 grid h-44 place-items-center rounded-3xl bg-gradient-to-b from-[#1b2335] to-[#0f1420]">
+          <img [src]="f.product.imageUrl" [alt]="f.name" class="h-36 w-36 object-contain drop-shadow-2xl" loading="lazy" />
+          <span class="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-red-500/90 px-2 py-0.5 text-[9px] font-bold text-white"><i class="h-1.5 w-1.5 animate-live-dot rounded-full bg-white"></i>مباشر</span>
+        </div>
+        <p class="mb-2 truncate text-sm font-bold text-white" dir="auto">{{ f.name }}</p>
+        <div class="mb-3 flex items-center justify-between rounded-2xl bg-card p-2.5 ring-1 ring-white/5">
+          <span class="text-[10px] text-slate-400">باقي</span>
+          <span class="text-gold-light"><app-countdown [end]="f.endTime" variant="inline"></app-countdown></span>
+        </div>
+        <div class="mb-3 flex items-center justify-between rounded-2xl bg-card p-2.5 ring-1 ring-white/5">
+          <span class="text-[10px] text-slate-400">البداية</span>
+          <span class="font-bold text-bid">{{ f.startPoints | number }} نقطة</span>
+        </div>
+        <span class="flex w-full items-center justify-center gap-1 rounded-2xl bg-bid py-2.5 text-xs font-bold text-white shadow-glow">زايد الآن</span>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <!-- tab bar -->
+  <nav *ngIf="hasTabBar" class="relative z-20 mx-3 mb-3 flex justify-around rounded-2xl bg-card/95 py-2 ring-1 ring-white/5">
+    <span *ngFor="let t of tabs" class="flex flex-col items-center gap-0.5 text-[9px] font-semibold" [ngClass]="t.id === screen ? 'text-bid' : 'text-slate-500'">
+      <app-icon [name]="t.icon" class="h-4 w-4"></app-icon>{{ t.label }}
+    </span>
+  </nav>
+</div>

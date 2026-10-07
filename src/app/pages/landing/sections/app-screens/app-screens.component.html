@@ -1,0 +1,25 @@
+<section id="screens" #root class="relative overflow-hidden py-28 lg:py-36">
+  <div class="pointer-events-none absolute inset-x-0 top-1/3 mx-auto h-96 max-w-4xl rounded-full bg-bid/10 blur-[140px]"></div>
+
+  <div class="container-x relative">
+    <div class="mx-auto max-w-2xl text-center">
+      <span class="eyebrow">جوه التطبيق</span>
+      <h2 class="section-title mt-5">كل حاجة <span class="text-gold-gradient">في جيبك.</span></h2>
+      <p class="section-lead mt-4">رصيدك، مزاداتك، شركاتك، والكود بتاعك. شاشة واحدة بعيد.</p>
+    </div>
+  </div>
+
+  <div
+    data-fan-stage
+    class="relative mt-14 flex snap-x snap-mandatory gap-6 overflow-x-auto px-[calc(50vw-132px)] pb-8 lg:mx-auto lg:block lg:h-[560px] lg:max-w-7xl 2xl:max-w-[1584px] lg:snap-none lg:overflow-visible lg:px-0 lg:pb-0"
+  >
+    <figure *ngFor="let s of screens" data-fan class="group shrink-0 snap-center lg:hover:!z-50">
+      <div class="transition duration-500 lg:group-hover:-translate-y-6">
+        <app-phone-frame>
+          <app-phone-screen [screen]="s.id"></app-phone-screen>
+        </app-phone-frame>
+      </div>
+      <figcaption class="mt-4 text-center text-sm font-bold text-slate-400 transition group-hover:text-white">{{ s.label }}</figcaption>
+    </figure>
+  </div>
+</section>

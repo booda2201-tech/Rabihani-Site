@@ -1,0 +1,88 @@
+import { environment } from '../../environments/environment';
+
+export const API_BASE_URL = environment.apiBaseUrl;
+
+/** Egypt */
+export const COUNTRY_ID = 3;
+
+export const CURRENCY_LABEL = 'جنيه';
+
+/**
+ * Store links live here only, so swapping them when the stores go live is a one-line change.
+ * `qr` empty means: encode this page's download section.
+ */
+export const DOWNLOAD_LINKS = {
+  android: '#download-android',
+  ios: '#download-ios',
+  qr: '',
+};
+
+export interface CategoryFilter {
+  id: number | null;
+  label: string;
+}
+
+export const CATEGORY_FILTERS: CategoryFilter[] = [
+  { id: null, label: 'الكل' },
+  { id: 1, label: 'إلكترونيات' },
+  { id: 2, label: 'هواتف' },
+  { id: 4, label: 'منزل ومطبخ' },
+];
+
+export interface Partner {
+  name: string;
+  displayName: string;
+  kind: string;
+  tagline: string;
+  mark: string;
+  from: string;
+  to: string;
+}
+
+export const PARTNERS: Partner[] = [
+  {
+    name: 'Bubblehope',
+    displayName: 'بابل هوب',
+    kind: 'مشروبات',
+    tagline: 'اشرب من بابل هوب، امسح QR، واكسب نقاطك فورًا',
+    mark: 'B',
+    from: '#f472b6',
+    to: '#8b5cf6',
+  },
+  {
+    name: 'FORTO',
+    displayName: 'فورتو',
+    kind: 'غسيل عربيات',
+    tagline: 'اغسل عربيتك في FORTO، امسح QR، واكسب نقاطك فورًا',
+    mark: 'F',
+    from: '#38bdf8',
+    to: '#2563eb',
+  },
+  {
+    name: 'T4TEA',
+    displayName: 'تي فور تي',
+    kind: 'شاي ومشروبات',
+    tagline: 'اشتري من T4TEA، امسح QR، واكسب نقاطك فورًا',
+    mark: 'T4',
+    from: '#34d399',
+    to: '#047857',
+  },
+  {
+    name: 'شاي الصعيد',
+    displayName: 'شاي الصعيد',
+    kind: 'شاي',
+    tagline: 'اشتري من شاي الصعيد، امسح QR، واكسب نقاطك فورًا',
+    mark: 'ص',
+    from: '#f59e0b',
+    to: '#b45309',
+  },
+  {
+    name: 'الأمانة لمواد البناء',
+    displayName: 'الأمانة',
+    kind: 'مواد بناء',
+    tagline: 'اشتري من الأمانة، امسح QR، واكسب نقاطك فورًا',
+    mark: 'أ',
+    from: '#d4af37',
+    to: '#78591a',
+  },
+];

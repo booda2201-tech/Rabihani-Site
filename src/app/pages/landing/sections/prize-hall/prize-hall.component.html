@@ -1,0 +1,105 @@
+<section id="prizes" #root class="relative overflow-hidden py-28 lg:py-36">
+  <div class="pointer-events-none absolute inset-0 opacity-70">
+    <div #orbit class="absolute inset-0"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#050816_75%)]"></div>
+  </div>
+
+  <div class="container-x relative">
+    <div data-hall-head class="mx-auto max-w-2xl text-center">
+      <span class="eyebrow"><i class="h-2 w-2 animate-live-dot rounded-full bg-red-400"></i>قاعة الجوائز</span>
+      <h2 class="section-title mt-5">العداد ماشي. <span class="text-gold-gradient">الجايزة مش هتستنى.</span></h2>
+      <p class="section-lead mt-4">السعر بالآلاف. البداية بكام نقطة. والسعر الحقيقي تعرفه جوه التطبيق.</p>
+    </div>
+
+    <!-- filters -->
+    <div data-hall-head class="mt-10 flex justify-center">
+      <div class="grid w-full max-w-sm grid-cols-2 gap-1.5 rounded-3xl bg-white/[0.04] p-1.5 ring-1 ring-white/10 backdrop-blur sm:flex sm:w-auto sm:max-w-none sm:rounded-full" role="tablist" aria-label="أقسام الجوائز">
+        <button
+          *ngFor="let f of filters"
+          type="button"
+          role="tab"
+          [attr.aria-selected]="active === f.id"
+          (click)="setFilter(f.id)"
+          class="flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition sm:py-2"
+          [ngClass]="active === f.id ? 'bg-bid text-white shadow-glow' : 'text-slate-300 hover:bg-white/5 hover:text-white'"
+        >
+          {{ f.label }}
+          <span *ngIf="auctions" class="rounded-full px-1.5 text-[11px] tabular-nums" [ngClass]="active === f.id ? 'bg-white/20' : 'bg-white/10'">{{ count(f) }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- loading -->
+    <div *ngIf="auctions === null" class="-mx-5 mt-10 flex gap-4 overflow-hidden px-5 sm:mx-0 sm:mt-14 sm:grid sm:grid-cols-2 sm:gap-6 sm:px-0 lg:grid-cols-3 xl:grid-cols-4">
+      <div *ngFor="let s of skeletons" class="h-[26rem] w-[86%] max-w-[22rem] shrink-0 animate-pulse rounded-[2rem] bg-card/70 ring-1 ring-white/5 sm:w-auto"></div>
+    </div>
+
+    <!-- empty -->
+    <div *ngIf="auctions && !auctions.length" class="mx-auto mt-14 max-w-md rounded-[2rem] bg-card/80 p-10 text-center ring-1 ring-white/10">
+      <app-icon name="gift" class="mx-auto h-12 w-12 text-gold"></app-icon>
+      <p class="mt-4 text-lg font-bold text-white">الجوايز الجاية بتتجهّز</p>
+      <p class="mt-2 font-medium text-slate-400">حمّل التطبيق عشان تبقى أول واحد يعرف.</p>
+      <a href="#download" class="btn-bid mt-6">حمّل ربحني</a>
+    </div>
+
+    <!-- cards -->
+    <div
+      *ngIf="auctions?.length"
+      #grid
+      (scroll)="onSwipe()"
+      class="relative -mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-2 pt-2 [perspective:1400px] [scrollbar-width:none] sm:mx-0 sm:mt-14 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:p-0 lg:grid-cols-3 xl:grid-cols-4 [&::-webkit-scrollbar]:hidden"
+    >
+      <div *ngFor="let a of auctions; trackBy: trackById" data-card [class.hidden]="!matches(a)" [attr.data-flip-id]="a.id" class="w-[86%] max-w-[22rem] shrink-0 snap-center [transform-style:preserve-3d] sm:w-auto sm:max-w-none">
+        <article
+          class="group relative flex h-full flex-col overflow-hidden rounded-[2rem] bg-card p-4 ring-1 ring-white/[0.06] transition duration-500 hover:-translate-y-1.5 hover:ring-gold/40 hover:shadow-glow-gold"
+        >
+          <div class="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-3xl bg-gradient-to-b from-[#1b2335] to-[#0f1420]">
+            <div class="absolute inset-x-10 bottom-4 h-8 rounded-full bg-black/50 blur-xl"></div>
+            <img [src]="a.product.imageUrl" [alt]="a.name" class="relative h-[78%] w-[78%] object-contain transition duration-700 group-hover:-translate-y-2 group-hover:scale-110" loading="lazy" />
+            <span class="chip absolute right-3 top-3 bg-white/10 text-slate-200 backdrop-blur">{{ categoryLabel(a) }}</span>
+            <span class="chip absolute left-3 top-3 gap-1.5 bg-red-500/90 text-white"><i class="h-1.5 w-1.5 animate-live-dot rounded-full bg-white"></i>مباشر</span>
+          </div>
+
+          <h3 class="mt-4 truncate text-base font-bold text-white" dir="auto">{{ a.name }}</h3>
+
+          <div class="mt-4 grid grid-cols-2 gap-3">
+            <div class="rounded-2xl bg-bid/10 p-3 ring-1 ring-bid/25">
+              <p class="text-[11px] font-semibold text-blue-300">البداية</p>
+              <p class="text-xl font-bold tabular-nums text-white">{{ a.startPoints | number }} <span class="text-xs text-blue-300">نقطة</span></p>
+            </div>
+            <div class="relative overflow-hidden rounded-2xl bg-white/[0.04] p-3 ring-1 ring-white/10">
+              <p class="text-[11px] font-semibold text-slate-400">السعر الرسمي</p>
+              <p class="select-none text-xl font-bold tabular-nums text-gold-light blur-[7px]" dir="ltr" aria-hidden="true">
+                ??,??? <span class="text-xs">{{ currency }}</span>
+              </p>
+              <span class="pointer-events-none absolute inset-0 grid place-items-center text-[11px] font-bold text-slate-300">جوه التطبيق</span>
+            </div>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between gap-3">
+            <span class="flex items-center gap-1.5 text-xs font-semibold text-slate-400"><app-icon name="clock" class="h-4 w-4"></app-icon>باقي</span>
+            <app-countdown [end]="a.endTime"></app-countdown>
+          </div>
+
+          <a href="#download" class="btn-bid mt-4 w-full text-sm" (click)="$event.stopPropagation()">
+            مزايدة الآن
+            <app-icon name="arrow" class="h-5 w-5 transition group-hover:-translate-x-1"></app-icon>
+          </a>
+        </article>
+      </div>
+    </div>
+
+    <div *ngIf="visibleCount > 1" class="mt-5 flex items-center justify-center gap-1.5 sm:hidden" aria-hidden="true">
+      <button
+        *ngFor="let a of visibleAuctions; let i = index; trackBy: trackById"
+        type="button"
+        tabindex="-1"
+        class="h-2 rounded-full transition-all duration-300"
+        [ngClass]="i === slide ? 'w-6 bg-gold' : 'w-2 bg-white/20'"
+        (click)="goTo(i)"
+      ></button>
+    </div>
+
+    <p *ngIf="auctions?.length && !visibleCount" class="mt-10 text-center font-semibold text-slate-400">مفيش مزادات في القسم ده دلوقتي. جرّب قسم تاني.</p>
+  </div>
+</section>

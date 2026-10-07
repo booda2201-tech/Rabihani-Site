@@ -1,0 +1,78 @@
+<section id="guess" #root class="relative overflow-hidden py-28 lg:py-36">
+  <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-l from-transparent via-gold/40 to-transparent"></div>
+
+  <div class="container-x grid items-center gap-14 lg:grid-cols-2">
+    <!-- hidden prize -->
+    <div class="relative mx-auto w-full max-w-md">
+      <div class="absolute -inset-10 rounded-full bg-[radial-gradient(circle,rgba(212,175,55,.18)_0%,transparent_65%)] blur-2xl"></div>
+      <div data-ring class="absolute -inset-6 rounded-full border border-dashed border-gold/15"></div>
+
+      <div data-product class="relative aspect-square rounded-[2.5rem] bg-gradient-to-br from-gold/50 via-white/10 to-bid/40 p-px shadow-[0_40px_80px_-20px_rgba(0,0,0,.8)]">
+        <div class="relative h-full w-full overflow-hidden rounded-[calc(2.5rem-1px)] bg-[radial-gradient(circle_at_50%_35%,#16224a_0%,#070b18_75%)]">
+          <img
+            *ngIf="featured"
+            [src]="featured.product.imageUrl"
+            alt=""
+            class="absolute inset-[12%] h-[76%] w-[76%] scale-110 object-contain opacity-30 blur-2xl"
+            draggable="false"
+          />
+          <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.04)_1px,transparent_1px)] bg-[size:28px_28px]"></div>
+
+          <div class="absolute inset-0 grid place-items-center">
+            <span data-qmark class="text-gold-gradient text-[9rem] font-bold leading-none drop-shadow-[0_0_30px_rgba(212,175,55,.45)]">؟</span>
+          </div>
+
+          <div class="pointer-events-none absolute inset-x-0 h-px animate-scan bg-gradient-to-l from-transparent via-gold-light to-transparent shadow-[0_0_14px_2px_rgba(243,215,122,.55)]"></div>
+
+          <span class="absolute right-5 top-5 inline-flex items-center gap-1.5 rounded-full bg-black/40 px-3 py-1 text-xs font-bold text-gold-light ring-1 ring-gold/30 backdrop-blur">
+            <i class="h-1.5 w-1.5 animate-live-dot rounded-full bg-gold"></i>
+            سرّي
+          </span>
+          <span class="absolute bottom-5 left-5 font-mono text-[11px] font-bold tracking-widest text-white/30" dir="ltr">PRIZE #???</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- copy -->
+    <div class="text-center lg:text-right">
+      <span data-guess class="eyebrow">جايزة مستخبية</span>
+
+      <h2 data-guess class="section-title mt-5">
+        فيه جايزة مستنياك…
+        <span class="text-gold-gradient">بس مش هنقولك إيه هي.</span>
+      </h2>
+
+      <p data-guess class="mx-auto mt-4 max-w-lg section-lead lg:mx-0">
+        اللي نقدر نقوله إنها حقيقية، وإن حد هياخدها قريب. الاسم والسعر ونقطة البداية… كلهم جوه التطبيق بس.
+      </p>
+
+      <div data-guess class="mt-8 divide-y divide-white/5 rounded-3xl bg-card/80 p-2 ring-1 ring-white/10 backdrop-blur">
+        <div class="flex items-center justify-between gap-4 px-4 py-4">
+          <span class="text-sm font-semibold text-slate-400">اسم الجايزة</span>
+          <span class="flex gap-1.5" aria-label="مخفي">
+            <i class="h-4 w-16 rounded bg-white/15"></i><i class="h-4 w-10 rounded bg-white/15"></i><i class="h-4 w-8 rounded bg-gold/30"></i>
+          </span>
+        </div>
+        <div class="flex items-center justify-between gap-4 px-4 py-4">
+          <span class="text-sm font-semibold text-slate-400">السعر الرسمي</span>
+          <span class="select-none text-2xl font-bold tabular-nums text-white blur-[6px]" dir="ltr" aria-label="مخفي"><span #price>??,???</span> {{ currency }}</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 px-4 py-4">
+          <span class="text-sm font-semibold text-slate-400">بداية المزاد</span>
+          <span class="select-none text-2xl font-bold tabular-nums text-blue-300 blur-[6px]" dir="ltr" aria-label="مخفي"><span #start>???</span> نقطة</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 px-4 py-4">
+          <span class="flex items-center gap-2 text-sm font-semibold text-slate-400"><i class="h-2 w-2 animate-live-dot rounded-full bg-red-400"></i> العداد شغّال</span>
+          <span class="text-sm font-bold text-red-300">الفرصة مش هتفضل مفتوحة</span>
+        </div>
+      </div>
+
+      <div data-guess class="mt-8 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+        <a href="#download" class="btn-gold text-base">
+          اكشفها جوه التطبيق
+          <app-icon name="arrow" class="h-5 w-5"></app-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
