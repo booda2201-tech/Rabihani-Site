@@ -2,6 +2,9 @@ import { environment } from '../../environments/environment';
 
 export const API_BASE_URL = environment.apiBaseUrl;
 
+/** Relative to API_BASE_URL. Expects `ResetPasswordPayload`; email + token arrive in the emailed link's query string. */
+export const RESET_PASSWORD_PATH = 'Auth/reset-password';
+
 /** Egypt */
 export const COUNTRY_ID = 3;
 

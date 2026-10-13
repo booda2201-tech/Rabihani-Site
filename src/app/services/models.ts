@@ -34,6 +34,13 @@ export interface AuctionRoom {
   winner: AuctionWinner | null;
 }
 
+export interface ResetPasswordPayload {
+  email: string;
+  token: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export interface Advertisement {
   id: number;
   title: string;
