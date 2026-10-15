@@ -21,6 +21,14 @@
   img {
     -webkit-user-drag: none;
   }
+
+  * {
+    scrollbar-width: none;
+  }
+
+  *::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer components {

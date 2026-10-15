@@ -3,6 +3,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, 
 import { DESKTOP_MOTION, MOBILE_OR_REDUCED, ScrollTrigger, gsap, prefersReducedMotion } from '../../../../animations/gsap';
 import { IconComponent, IconName } from '../../../../shared/icon.component';
 import { PhoneFrameComponent } from '../../../../shared/phone-frame.component';
+import { injectIsBrowser } from '../../../../shared/platform';
 import { PhoneScreen, PhoneScreenComponent } from '../../../../shared/phone-screen/phone-screen.component';
 
 interface Step {
@@ -29,10 +30,18 @@ export class HowToEarnComponent implements AfterViewInit, OnDestroy {
   ];
 
   private ctx?: gsap.Context;
+  private jumpTo?: (i: number) => void;
+
+  private readonly browser = injectIsBrowser();
 
   constructor(private zone: NgZone) {}
 
+  select(i: number): void {
+    this.zone.runOutsideAngular(() => this.jumpTo?.(i));
+  }
+
   ngAfterViewInit(): void {
+    if (!this.browser) return;
     this.zone.runOutsideAngular(() => {
       this.ctx = gsap.context(() => {
         const mm = gsap.matchMedia();
@@ -86,25 +95,34 @@ export class HowToEarnComponent implements AfterViewInit, OnDestroy {
   }
 
   /** Mobile / reduced motion: no pin; the phone cycles through the steps while it is on screen. */
-  private simpleStory(): void {
+  private simpleStory(): () => void {
     const steps = gsap.utils.toArray<HTMLElement>('[data-step]');
     const screens = gsap.utils.toArray<HTMLElement>('[data-screen]');
     const fade = prefersReducedMotion() ? 0 : 0.4;
     const show = (i: number) => {
-      screens.forEach((s, j) => gsap.to(s, { autoAlpha: i === j ? 1 : 0, duration: fade }));
+      screens.forEach((s, j) => gsap.to(s, { autoAlpha: i === j ? 1 : 0, duration: fade, overwrite: true }));
       steps.forEach((s, j) => s.classList.toggle('is-active', i === j));
       gsap.to('[data-progress]', { scaleY: (i + 1) / steps.length, duration: fade });
     };
     show(0);
 
     const cycle = gsap.timeline({ repeat: -1, paused: true });
-    steps.forEach((_, i) => cycle.call(show, [i]).to({}, { duration: 2.8 }));
+    steps.forEach((_, i) => cycle.addLabel(`s${i}`).call(show, [i]).to({}, { duration: 3.2 }));
 
-    ScrollTrigger.create({
+    const trigger = ScrollTrigger.create({
       trigger: this.root.nativeElement,
       start: 'top 70%',
       end: 'bottom 20%',
       onToggle: (self) => (self.isActive ? cycle.play() : cycle.pause()),
     });
+
+    this.jumpTo = (i) => {
+      show(i);
+      cycle.seek(`s${i}`);
+      if (trigger.isActive) cycle.play();
+    };
+    return () => {
+      this.jumpTo = undefined;
+    };
   }
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, map, shareReplay, timer } from 'rxjs';
+import { Observable, map, of, shareReplay, timer } from 'rxjs';
+import { injectIsBrowser } from '../shared/platform';
 
 export interface CountdownParts {
   days: number;
@@ -23,8 +24,11 @@ export function countdownParts(end: string | number | Date, now: number): Countd
 
 @Injectable({ providedIn: 'root' })
 export class ClockService {
-  readonly now$: Observable<number> = timer(0, 1000).pipe(
-    map(() => Date.now()),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
+  /** A single tick on the server: a running timer would keep prerendering from ever settling. */
+  readonly now$: Observable<number> = injectIsBrowser()
+    ? timer(0, 1000).pipe(
+        map(() => Date.now()),
+        shareReplay({ bufferSize: 1, refCount: true }),
+      )
+    : of(Date.now());
 }

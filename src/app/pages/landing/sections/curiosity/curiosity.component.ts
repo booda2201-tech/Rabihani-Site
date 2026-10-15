@@ -6,6 +6,7 @@ import { CURRENCY_LABEL } from '../../../../config/site.config';
 import { AuctionRoom } from '../../../../services/models';
 import { PrizesService } from '../../../../services/prizes.service';
 import { IconComponent } from '../../../../shared/icon.component';
+import { injectIsBrowser } from '../../../../shared/platform';
 
 const PRICE_DIGITS = 5;
 
@@ -28,9 +29,12 @@ export class CuriosityComponent implements AfterViewInit, OnDestroy {
   private scramble?: number;
   private sub?: Subscription;
 
+  private readonly browser = injectIsBrowser();
+
   constructor(private prizes: PrizesService, private zone: NgZone, private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
+    if (!this.browser) return;
     this.sub = this.prizes.featured$.subscribe((f) => {
       this.featured = f;
       this.cdr.detectChanges();

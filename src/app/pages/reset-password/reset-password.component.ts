@@ -8,6 +8,7 @@ import { MOTION_OK, gsap } from '../../animations/gsap';
 import { ApiService } from '../../services/api.service';
 import { IconComponent } from '../../shared/icon.component';
 import { LogoComponent } from '../../shared/logo.component';
+import { injectIsBrowser } from '../../shared/platform';
 import { StoreButtonsComponent } from '../../shared/store-buttons.component';
 
 type PageState = 'form' | 'success' | 'invalid-link';
@@ -66,6 +67,7 @@ export class ResetPasswordComponent implements AfterViewInit, OnDestroy {
   );
 
   private ctx?: gsap.Context;
+  private readonly browser = injectIsBrowser();
 
   constructor(
     route: ActivatedRoute,
@@ -106,6 +108,7 @@ export class ResetPasswordComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    if (!this.browser) return;
     this.zone.runOutsideAngular(() => {
       this.ctx = gsap.context(() => {
         gsap.matchMedia().add(MOTION_OK, () => {

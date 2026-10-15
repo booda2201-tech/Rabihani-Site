@@ -6,7 +6,9 @@ import { PARTNERS } from '../../../../config/site.config';
 import { PrizesService } from '../../../../services/prizes.service';
 import { CountdownComponent } from '../../../../shared/countdown.component';
 import { IconComponent } from '../../../../shared/icon.component';
+import { PulseRingDirective } from '../../../../shared/pulse-ring.directive';
 import { LogoComponent } from '../../../../shared/logo.component';
+import { injectIsBrowser } from '../../../../shared/platform';
 import { StoreButtonsComponent } from '../../../../shared/store-buttons.component';
 import { HeroScene } from '../../../../three/hero-scene/hero-scene';
 
@@ -19,7 +21,7 @@ interface HeroStats {
 @Component({
   selector: 'app-hero',
   standalone: true,
-  imports: [NgIf, LogoComponent, StoreButtonsComponent, CountdownComponent, IconComponent],
+  imports: [NgIf, LogoComponent, StoreButtonsComponent, CountdownComponent, IconComponent, PulseRingDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './hero.component.html',
 })
@@ -35,9 +37,12 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
   private sub?: Subscription;
   private removePointer?: () => void;
 
+  private readonly browser = injectIsBrowser();
+
   constructor(private prizes: PrizesService, private zone: NgZone, private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
+    if (!this.browser) return;
     this.zone.runOutsideAngular(() => {
       const reduced = prefersReducedMotion();
       try {

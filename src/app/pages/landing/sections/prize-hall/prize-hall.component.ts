@@ -1,12 +1,13 @@
 import { DecimalPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Flip, MOTION_OK, ScrollTrigger, gsap, prefersReducedMotion, queueScrollRefresh } from '../../../../animations/gsap';
+import { MOTION_OK, ScrollTrigger, gsap, prefersReducedMotion, queueScrollRefresh } from '../../../../animations/gsap';
 import { CATEGORY_FILTERS, CURRENCY_LABEL, CategoryFilter } from '../../../../config/site.config';
 import { AuctionRoom } from '../../../../services/models';
 import { PrizesService, categoryLabel } from '../../../../services/prizes.service';
 import { CountdownComponent } from '../../../../shared/countdown.component';
 import { IconComponent } from '../../../../shared/icon.component';
+import { injectIsBrowser } from '../../../../shared/platform';
 import { PrizeOrbit } from '../../../../three/prize-orbit/prize-orbit';
 
 @Component({
@@ -33,9 +34,12 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
   private sub?: Subscription;
   private entered = false;
 
+  private readonly browser = injectIsBrowser();
+
   constructor(private prizes: PrizesService, private zone: NgZone, private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
+    if (!this.browser) return;
     this.zone.runOutsideAngular(() => {
       try {
         this.orbit = new PrizeOrbit(this.orbitHost.nativeElement, prefersReducedMotion());
@@ -106,25 +110,38 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
 
   setFilter(id: number | null): void {
     if (id === this.active) return;
-    const cards = this.grid?.nativeElement.querySelectorAll<HTMLElement>('[data-card]');
-    const state = cards?.length ? Flip.getState(cards) : null;
+    const grid = this.grid?.nativeElement;
 
-    this.active = id;
-    this.slide = 0;
-    this.grid?.nativeElement.scrollTo({ left: 0 });
-    this.cdr.detectChanges();
+    const apply = () => {
+      this.active = id;
+      this.slide = 0;
+      grid?.scrollTo({ left: 0 });
+      this.cdr.detectChanges();
+      queueScrollRefresh();
+    };
+
     this.orbit?.pulse();
+    if (!grid || prefersReducedMotion()) {
+      apply();
+      return;
+    }
 
-    if (!state || prefersReducedMotion()) return;
+    const cards = grid.querySelectorAll<HTMLElement>('[data-card]');
     this.zone.runOutsideAngular(() => {
-      Flip.from(state, {
-        duration: 0.65,
-        ease: 'power3.inOut',
-        scale: true,
-        absolute: true,
-        onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: 0.7, rotateX: 25 }, { opacity: 1, scale: 1, rotateX: 0, duration: 0.6, delay: 0.15 }),
-        onLeave: (els) => gsap.to(els, { opacity: 0, scale: 0.7, duration: 0.4 }),
-        onComplete: queueScrollRefresh,
+      gsap.killTweensOf(cards);
+      gsap.to(grid.querySelectorAll('[data-card]:not(.hidden)'), {
+        opacity: 0,
+        y: 12,
+        duration: 0.18,
+        ease: 'power1.in',
+        onComplete: () => {
+          apply();
+          gsap.fromTo(
+            grid.querySelectorAll('[data-card]:not(.hidden)'),
+            { opacity: 0, y: 24 },
+            { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out', stagger: 0.06, clearProps: 'opacity,transform' },
+          );
+        },
       });
     });
   }

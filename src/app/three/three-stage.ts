@@ -1,5 +1,11 @@
 import * as THREE from 'three';
 
+/** Phone GPUs are fill-rate bound; past 1.5x the extra pixels are not visible on a small screen. */
+function pixelRatioCap(): number {
+  const handheld = window.matchMedia('(max-width: 1023px), (pointer: coarse)').matches;
+  return handheld ? 1.5 : 2;
+}
+
 /** Shared renderer lifecycle: resize, pause offscreen, dispose. Run it outside Angular's zone. */
 export abstract class ThreeStage {
   protected readonly renderer: THREE.WebGLRenderer;
@@ -16,7 +22,7 @@ export abstract class ThreeStage {
 
   constructor(protected readonly host: HTMLElement, protected readonly reducedMotion: boolean, fov = 40) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, pixelRatioCap()));
     this.renderer.setClearColor(0x000000, 0);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
 

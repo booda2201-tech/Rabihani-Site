@@ -1,7 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { MOTION_OK, gsap } from '../../../../animations/gsap';
-import { DOWNLOAD_LINKS } from '../../../../config/site.config';
+import { DOWNLOAD_LINKS, SITE_URL } from '../../../../config/site.config';
 import { LogoComponent } from '../../../../shared/logo.component';
+import { injectIsBrowser } from '../../../../shared/platform';
 import { QrCodeComponent } from '../../../../shared/qr-code.component';
 import { StoreButtonsComponent } from '../../../../shared/store-buttons.component';
 
@@ -15,13 +16,15 @@ import { StoreButtonsComponent } from '../../../../shared/store-buttons.componen
 export class DownloadComponent implements AfterViewInit, OnDestroy {
   @ViewChild('root', { static: true }) root!: ElementRef<HTMLElement>;
 
-  readonly qrValue = DOWNLOAD_LINKS.qr || `${location.origin}${location.pathname}#download`;
+  readonly qrValue = DOWNLOAD_LINKS.qr || `${SITE_URL}/#download`;
 
   private ctx?: gsap.Context;
+  private readonly browser = injectIsBrowser();
 
   constructor(private zone: NgZone) {}
 
   ngAfterViewInit(): void {
+    if (!this.browser) return;
     this.zone.runOutsideAngular(() => {
       this.ctx = gsap.context(() => {
         gsap.matchMedia().add(MOTION_OK, () => {

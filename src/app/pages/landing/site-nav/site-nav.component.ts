@@ -2,6 +2,7 @@ import { NgFor } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { ScrollTrigger } from '../../../animations/gsap';
 import { LogoComponent } from '../../../shared/logo.component';
+import { injectIsBrowser } from '../../../shared/platform';
 
 @Component({
   selector: 'app-site-nav',
@@ -33,9 +34,12 @@ export class SiteNavComponent implements AfterViewInit, OnDestroy {
 
   private trigger?: ScrollTrigger;
 
+  private readonly browser = injectIsBrowser();
+
   constructor(private zone: NgZone) {}
 
   ngAfterViewInit(): void {
+    if (!this.browser) return;
     this.zone.runOutsideAngular(() => {
       this.trigger = ScrollTrigger.create({
         start: 40,

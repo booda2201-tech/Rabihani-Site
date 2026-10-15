@@ -2,6 +2,7 @@ import { NgFor } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { DESKTOP_MOTION, gsap } from '../../../../animations/gsap';
 import { PhoneFrameComponent } from '../../../../shared/phone-frame.component';
+import { injectIsBrowser } from '../../../../shared/platform';
 import { PhoneScreen, PhoneScreenComponent } from '../../../../shared/phone-screen/phone-screen.component';
 
 @Component({
@@ -25,9 +26,12 @@ export class AppScreensComponent implements AfterViewInit, OnDestroy {
 
   private ctx?: gsap.Context;
 
+  private readonly browser = injectIsBrowser();
+
   constructor(private zone: NgZone) {}
 
   ngAfterViewInit(): void {
+    if (!this.browser) return;
     this.zone.runOutsideAngular(() => {
       this.ctx = gsap.context(() => {
         gsap.matchMedia().add(DESKTOP_MOTION, () => this.fan());

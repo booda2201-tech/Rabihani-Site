@@ -2,6 +2,12 @@ import { environment } from '../../environments/environment';
 
 export const API_BASE_URL = environment.apiBaseUrl;
 
+/** Production origin, no trailing slash. Canonical links, social previews and the QR all point here. Keep in sync with robots.txt and sitemap.xml. */
+export const SITE_URL = 'https://rabahni.com';
+export const SITE_NAME = 'ربحني';
+export const SITE_DESCRIPTION =
+  'ربحني تطبيق مصري بيخليك تكسب نقاط من كل مشترياتك عند الشركات المشاركة، وتزايد بيها على موبايلات وإلكترونيات وأجهزة منزلية حقيقية. حمّل التطبيق مجانًا على Android و iOS.';
+
 /** Relative to API_BASE_URL. Expects `ResetPasswordPayload`; email + token arrive in the emailed link's query string. */
 export const RESET_PASSWORD_PATH = 'Auth/reset-password';
 

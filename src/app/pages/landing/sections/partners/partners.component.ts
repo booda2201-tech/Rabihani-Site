@@ -6,6 +6,7 @@ import { PARTNERS, Partner } from '../../../../config/site.config';
 import { Advertisement } from '../../../../services/models';
 import { PrizesService } from '../../../../services/prizes.service';
 import { IconComponent } from '../../../../shared/icon.component';
+import { injectIsBrowser } from '../../../../shared/platform';
 
 @Component({
   selector: 'app-partners',
@@ -25,9 +26,12 @@ export class PartnersComponent implements AfterViewInit, OnDestroy {
   private ctx?: gsap.Context;
   private sub?: Subscription;
 
+  private readonly browser = injectIsBrowser();
+
   constructor(private prizes: PrizesService, private zone: NgZone, private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
+    if (!this.browser) return;
     this.zone.runOutsideAngular(() => {
       this.ctx = gsap.context(() => {
         gsap.matchMedia().add(MOTION_OK, () => {

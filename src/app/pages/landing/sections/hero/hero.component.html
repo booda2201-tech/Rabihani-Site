@@ -14,7 +14,7 @@
   </div>
 
   <!-- backdrop -->
-  <div class="pointer-events-none absolute inset-0 z-0">
+  <div class="pointer-events-none absolute inset-0 z-0 overflow-hidden will-change-transform">
     <div class="absolute -left-40 top-0 h-[40rem] w-[40rem] rounded-full bg-bid/25 blur-[140px]"></div>
     <div class="absolute -right-40 bottom-[-10rem] h-[30rem] w-[30rem] rounded-full bg-gold/10 blur-[140px]"></div>
     <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.035)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,black_25%,transparent_70%)]"></div>
@@ -49,10 +49,13 @@
       </p>
 
       <div data-hero-fade class="mt-9 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
-        <a href="#download" class="btn-gold group animate-cta-pulse px-8 py-4 text-lg shadow-glow-gold motion-reduce:animate-none">
-          ابدأ تزايد دلوقتي
-          <app-icon name="arrow" class="h-5 w-5 transition group-hover:-translate-x-1"></app-icon>
-        </a>
+        <span class="relative inline-flex rounded-2xl">
+          <span appPulseRing class="rounded-2xl bg-bid"></span>
+          <a href="#download" class="btn-gold group relative px-8 py-4 text-lg motion-reduce:shadow-glow-gold">
+            ابدأ تزايد دلوقتي
+            <app-icon name="arrow" class="h-5 w-5 transition group-hover:-translate-x-1"></app-icon>
+          </a>
+        </span>
         <a href="#how" class="inline-flex items-center gap-2 rounded-2xl px-5 py-4 font-bold text-slate-300 ring-1 ring-white/15 transition hover:bg-white/5 hover:text-white">
           <app-icon name="qr" class="h-5 w-5 text-gold"></app-icon>
           إزاي بتكسب نقاط؟
@@ -93,12 +96,12 @@
 
       <div data-float-layer class="pointer-events-none absolute inset-0">
         <!-- points landed -->
-        <div data-float class="absolute right-0 top-[10%] sm:right-[2%]">
-          <div data-depth="1.4" class="flex items-center gap-3 rounded-2xl bg-card/80 p-3 pl-5 shadow-2xl ring-1 ring-white/10 backdrop-blur-xl">
-            <span class="grid h-10 w-10 place-items-center rounded-xl bg-emerald-500/15 text-emerald-400"><app-icon name="check" [stroke]="2.4" class="h-5 w-5"></app-icon></span>
+        <div data-float class="absolute inset-x-0 bottom-0 flex justify-center sm:inset-x-auto sm:bottom-auto sm:right-[2%] sm:top-[10%] sm:block">
+          <div data-depth="1.4" class="flex items-center gap-2.5 rounded-2xl bg-card/85 p-2 pl-4 shadow-2xl ring-1 ring-white/10 sm:gap-3 lg:backdrop-blur-xl sm:p-3 sm:pl-5">
+            <span class="grid h-8 w-8 place-items-center rounded-xl bg-emerald-500/15 text-emerald-400 sm:h-10 sm:w-10"><app-icon name="check" [stroke]="2.4" class="h-4 w-4 sm:h-5 sm:w-5"></app-icon></span>
             <span class="text-right">
-              <span class="block text-sm font-black text-white">نقاط جديدة دخلت محفظتك</span>
-              <span class="block text-xs font-bold text-slate-400">بعد مسحة QR عند FORTO</span>
+              <span class="block text-xs font-black text-white sm:text-sm">نقاط جديدة دخلت محفظتك</span>
+              <span class="block text-[11px] font-bold text-slate-400 sm:text-xs">بعد مسحة QR عند FORTO</span>
             </span>
           </div>
         </div>

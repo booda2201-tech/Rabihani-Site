@@ -11,7 +11,7 @@ const SPARK_COUNT = 180;
 const SPARK_LIFE = 1.9;
 const AUTO_BURST_EVERY = 5.5;
 const POINT_REWARDS = [50, 100, 250, 75];
-const PAYLOAD_SIZE = 2.2;
+const PAYLOAD_SIZE = 2;
 
 function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -241,7 +241,7 @@ export class HeroScene extends ThreeStage {
     this.glow.position.set(0, 0.4, -2);
 
     this.gift.rotation.set(0.28, -0.6, 0);
-    this.innerLight.position.set(0, 1.2, 0);
+    this.innerLight.position.set(0, 0.1, 0);
     this.gift.add(this.innerLight);
     this.payload.visible = false;
     this.payload.renderOrder = 10;
@@ -330,7 +330,8 @@ export class HeroScene extends ThreeStage {
     this.beam.position.set(this.gift.position.x, this.gift.position.y + 0.75 * this.gift.scale.y, this.gift.position.z);
     this.beam.scale.set(2.2 * this.gift.scale.x, 3.6 * this.gift.scale.y, 1);
     this.beam.material.opacity = open * 0.55;
-    this.innerLight.intensity = open * 55;
+    this.innerLight.intensity = open * 14;
+    this.gift.rotation.x += open * 0.3;
     (this.glow.material as THREE.SpriteMaterial).opacity = 0.32 + open * 0.4 + Math.sin(t * 2) * 0.03;
 
     this.updateSparks(since);
@@ -393,7 +394,7 @@ export class HeroScene extends ThreeStage {
     }
     this.payload.position.set(
       this.gift.position.x,
-      this.gift.position.y + (0.5 + rise * 1.55 + leaving * 0.5 + Math.sin(s * 3) * 0.05) * this.gift.scale.y,
+      this.gift.position.y + (-0.15 + rise * 1.95 + leaving * 0.4 + Math.sin(s * 3) * 0.05) * this.gift.scale.y,
       this.gift.position.z + 0.6 + Math.min(rise, 1) * 1.2,
     );
     this.payload.scale.setScalar(PAYLOAD_SIZE * this.gift.scale.x * (0.1 + 0.9 * Math.min(rise, 1.06)));
@@ -448,11 +449,7 @@ export class HeroScene extends ThreeStage {
     const ribbon = new THREE.MeshStandardMaterial({ color: 0xe6c35a, metalness: 0.75, roughness: 0.28, emissive: 0x8a6a14, emissiveIntensity: 0.55 });
     const accent = new THREE.MeshStandardMaterial({ color: BLUE, metalness: 0.4, roughness: 0.25, emissive: 0x1d4ed8, emissiveIntensity: 0.9 });
 
-    const body = new THREE.Mesh(new THREE.BoxGeometry(2, 1.7, 2), wrap);
-    const bandA = new THREE.Mesh(new THREE.BoxGeometry(0.34, 1.72, 2.03), ribbon);
-    const bandB = new THREE.Mesh(new THREE.BoxGeometry(2.03, 1.72, 0.34), ribbon);
-    const base = new THREE.Group();
-    base.add(body, bandA, bandB);
+    const base = this.buildOpenBox(wrap, ribbon);
 
     const lidBox = new THREE.Mesh(new THREE.BoxGeometry(2.24, 0.46, 2.24), wrap);
     const lidBandA = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.48, 2.27), ribbon);
@@ -479,6 +476,54 @@ export class HeroScene extends ThreeStage {
     this.lid.position.y = 0.97;
 
     this.gift.add(base, this.lid);
+  }
+
+  /** 2 × 1.7 × 2 box with no top: four walls and a floor, ribbon on the outside only, so the lid reveals a real cavity. */
+  private buildOpenBox(wrap: THREE.Material, ribbon: THREE.Material): THREE.Group {
+    const W = 2;
+    const H = 1.7;
+    const T = 0.08;
+    const inner = new THREE.MeshStandardMaterial({ color: 0x081236, roughness: 0.9, metalness: 0, envMapIntensity: 0.25, emissive: 0x050b26, emissiveIntensity: 0.6 });
+    const box = new THREE.Group();
+
+    // BoxGeometry face order: +x, -x, +y, -y, +z, -z
+    const faces = (innerFace: number): THREE.Material[] =>
+      [0, 1, 2, 3, 4, 5].map((i) => (i === innerFace ? inner : i === 2 ? ribbon : wrap));
+
+    const front = new THREE.Mesh(new THREE.BoxGeometry(W, H, T), faces(5));
+    front.position.z = W / 2 - T / 2;
+    const back = new THREE.Mesh(new THREE.BoxGeometry(W, H, T), faces(4));
+    back.position.z = -(W / 2 - T / 2);
+    const right = new THREE.Mesh(new THREE.BoxGeometry(T, H, W - T * 2), faces(1));
+    right.position.x = W / 2 - T / 2;
+    const left = new THREE.Mesh(new THREE.BoxGeometry(T, H, W - T * 2), faces(0));
+    left.position.x = -(W / 2 - T / 2);
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(W - T * 2, T, W - T * 2), [wrap, wrap, inner, wrap, wrap, wrap]);
+    floor.position.y = -H / 2 + T / 2;
+    box.add(front, back, right, left, floor);
+
+    const strip = 0.34;
+    const out = W / 2 + 0.012;
+    const zStrip = new THREE.BoxGeometry(strip, H + 0.02, 0.024);
+    const xStrip = new THREE.BoxGeometry(0.024, H + 0.02, strip);
+    const under = new THREE.BoxGeometry(strip, 0.024, W + 0.03);
+    [
+      [zStrip, 0, 0, out],
+      [zStrip, 0, 0, -out],
+      [xStrip, out, 0, 0],
+      [xStrip, -out, 0, 0],
+    ].forEach(([geo, x, y, z]) => {
+      const m = new THREE.Mesh(geo as THREE.BufferGeometry, ribbon);
+      m.position.set(x as number, y as number, z as number);
+      box.add(m);
+    });
+    const underA = new THREE.Mesh(under, ribbon);
+    underA.position.y = -H / 2 - 0.012;
+    const underB = underA.clone();
+    underB.rotation.y = Math.PI / 2;
+    box.add(underA, underB);
+
+    return box;
   }
 
   private buildStand(): void {

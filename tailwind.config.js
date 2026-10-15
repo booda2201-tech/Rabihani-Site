@@ -32,9 +32,10 @@ module.exports = {
           '0%': { transform: 'translateX(120%)' },
           '100%': { transform: 'translateX(-120%)' },
         },
+        // applied to a track spanning 12%–84% of the frame; the line sits on the track's top edge
         scan: {
-          '0%, 100%': { top: '12%' },
-          '50%': { top: '84%' },
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(100%)' },
         },
         'live-dot': {
           '0%, 100%': { opacity: '1' },
