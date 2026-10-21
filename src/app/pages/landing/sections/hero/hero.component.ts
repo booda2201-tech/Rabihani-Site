@@ -85,7 +85,9 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
         .from('[data-intro-sub]', { y: 12, opacity: 0, duration: 0.5 }, '-=0.3')
         .to('[data-intro-bar]', { scaleX: 1, duration: 0.9, ease: 'power2.inOut' }, '-=0.25')
         .to('[data-intro-logo]', { scale: 1.06, duration: 0.25, ease: 'power2.out', yoyo: true, repeat: 1 })
-        .fromTo('[data-intro]', { clipPath: 'inset(0% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 100% 0%)', duration: 0.8, ease: 'expo.inOut' })
+        .addLabel('wipe')
+        .fromTo('[data-intro]', { yPercent: 0 }, { yPercent: -100, duration: 0.8, ease: 'expo.inOut' }, 'wipe')
+        .fromTo('[data-intro-inner]', { yPercent: 0 }, { yPercent: 100, duration: 0.8, ease: 'expo.inOut' }, 'wipe')
         .set('[data-intro]', { display: 'none' });
 
       const rest = phoneRest();

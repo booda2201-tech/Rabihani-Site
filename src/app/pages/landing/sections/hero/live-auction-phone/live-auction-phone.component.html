@@ -32,7 +32,7 @@
       <!-- product: takes whatever height is left so the screen is always filled -->
       <div class="relative grid min-h-[4.5rem] flex-1 place-items-center overflow-hidden rounded-2xl bg-white/[0.05]">
         <div class="absolute inset-x-10 bottom-2 h-4 rounded-full bg-black/50 blur-md"></div>
-        <img data-product [src]="prize.product.imageUrl" [alt]="prize.name" class="relative h-[78%] max-h-[8.5rem] w-[11rem] object-contain drop-shadow-xl" />
+        <img data-product [src]="prize.product.imageUrl" [alt]="prize.name" decoding="async" class="relative h-[78%] max-h-[8.5rem] w-[11rem] object-contain drop-shadow-xl" />
         <span *ngIf="!won" class="absolute right-2.5 top-2.5 flex items-center gap-1 rounded-full bg-red-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
           <i class="h-1.5 w-1.5 animate-live-dot rounded-full bg-white"></i>مباشر
         </span>

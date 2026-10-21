@@ -8,7 +8,7 @@ import { PrizesService, categoryLabel, cocktail, hiddenPrize } from '../../../..
 import { CountdownComponent } from '../../../../shared/countdown.component';
 import { IconComponent } from '../../../../shared/icon.component';
 import { injectIsBrowser } from '../../../../shared/platform';
-import { PrizeOrbit } from '../../../../three/prize-orbit/prize-orbit';
+import type { PrizeOrbit } from '../../../../three/prize-orbit/prize-orbit';
 
 /** The hall is a teaser, not a catalogue: the rest is only visible in the app. */
 const TEASER_SIZE = 4;
@@ -40,6 +40,9 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
   readonly categoryLabel = categoryLabel;
   readonly skeletons = [0, 1, 2, 3];
   private orbit?: PrizeOrbit;
+  private orbitObserver?: IntersectionObserver;
+  private scrollProgress = 0;
+  private destroyed = false;
   private ctx?: gsap.Context;
   private sub?: Subscription;
   private entered = false;
@@ -51,18 +54,16 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     if (!this.browser) return;
     this.zone.runOutsideAngular(() => {
-      try {
-        this.orbit = new PrizeOrbit(this.orbitHost.nativeElement, prefersReducedMotion());
-        this.orbit.start();
-      } catch {
-        /* WebGL unavailable: the gradient backdrop stays */
-      }
+      this.loadOrbitWhenNear();
       this.ctx = gsap.context(() => {
         ScrollTrigger.create({
           trigger: this.root.nativeElement,
           start: 'top bottom',
           end: 'bottom top',
-          onUpdate: (self) => this.orbit?.setScroll(self.progress),
+          onUpdate: (self) => {
+            this.scrollProgress = self.progress;
+            this.orbit?.setScroll(self.progress);
+          },
         });
         gsap.matchMedia().add(MOTION_OK, () => {
           gsap.from('[data-hall-head] > *', { y: 40, opacity: 0, stagger: 0.1, scrollTrigger: { trigger: this.root.nativeElement, start: 'top 75%' } });
@@ -80,9 +81,36 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
+    this.orbitObserver?.disconnect();
     this.sub?.unsubscribe();
     this.ctx?.revert();
     this.orbit?.dispose();
+  }
+
+  /**
+   * three.js is most of the bundle and WebGL setup is slow on iOS, so neither happens at startup:
+   * the backdrop is fetched and built once the hall is within a screen or so of the viewport.
+   */
+  private loadOrbitWhenNear(): void {
+    this.orbitObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        this.orbitObserver?.disconnect();
+        import('../../../../three/prize-orbit/prize-orbit')
+          .then(({ PrizeOrbit }) => {
+            if (this.destroyed) return;
+            this.orbit = new PrizeOrbit(this.orbitHost.nativeElement, prefersReducedMotion());
+            this.orbit.setScroll(this.scrollProgress);
+            this.orbit.start();
+          })
+          .catch(() => {
+            /* WebGL or the chunk unavailable: the gradient backdrop stays */
+          });
+      },
+      { rootMargin: '800px 0px' },
+    );
+    this.orbitObserver.observe(this.root.nativeElement);
   }
 
   matches(a: AuctionRoom): boolean {

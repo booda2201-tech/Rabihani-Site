@@ -26,6 +26,11 @@ export const DOWNLOAD_LINKS = {
   qr: `${SITE_URL}/download/`,
 };
 
+export const SOCIAL_LINKS = {
+  instagram: 'https://www.instagram.com/rabahny.app/',
+  facebook: 'https://www.facebook.com/profile.php?id=61595836253104',
+};
+
 export interface CategoryFilter {
   id: number | null;
   label: string;

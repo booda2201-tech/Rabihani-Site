@@ -55,7 +55,7 @@
         >
           <div class="relative grid aspect-[4/3] place-items-center overflow-hidden rounded-3xl bg-gradient-to-b from-[#1b2335] to-[#0f1420]">
             <div class="absolute inset-x-10 bottom-4 h-8 rounded-full bg-black/50 blur-xl"></div>
-            <img [src]="a.product.imageUrl" [alt]="a.name" class="relative h-[78%] w-[78%] object-contain transition duration-700 group-hover:-translate-y-2 group-hover:scale-110" loading="lazy" />
+            <img [src]="a.product.imageUrl" [alt]="a.name" class="relative h-[78%] w-[78%] object-contain transition duration-700 group-hover:-translate-y-2 group-hover:scale-110" loading="lazy" decoding="async" />
             <span class="chip absolute right-3 top-3 bg-white/10 text-slate-200 backdrop-blur">{{ categoryLabel(a) }}</span>
             <span class="chip absolute left-3 top-3 gap-1.5 bg-red-500/90 text-white"><i class="h-1.5 w-1.5 animate-live-dot rounded-full bg-white"></i>مباشر</span>
           </div>
@@ -108,7 +108,7 @@
         <span class="flex items-center gap-3">
           <span class="flex -space-x-3 space-x-reverse" aria-hidden="true">
             <span *ngFor="let p of peek" class="grid h-11 w-11 place-items-center overflow-hidden rounded-full bg-card ring-2 ring-ink">
-              <img [src]="p.product.imageUrl" alt="" class="h-8 w-8 object-contain opacity-80 blur-[1.5px]" loading="lazy" />
+              <img [src]="p.product.imageUrl" alt="" class="h-8 w-8 object-contain opacity-80 blur-[1.5px]" loading="lazy" decoding="async" />
             </span>
           </span>
           <span>

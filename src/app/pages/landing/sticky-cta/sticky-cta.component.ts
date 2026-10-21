@@ -60,7 +60,7 @@ export class StickyCtaComponent implements AfterViewInit, OnDestroy {
         ScrollTrigger.create({
           trigger: '#download',
           start: 'top 85%',
-          end: 'bottom top',
+          end: 'max',
           onToggle: (self) => {
             this.atDownload = self.isActive;
             this.sync();

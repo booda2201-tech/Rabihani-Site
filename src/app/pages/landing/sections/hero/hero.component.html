@@ -1,6 +1,8 @@
 <section id="hero" #root class="relative min-h-[100svh] overflow-hidden pt-24 lg:pt-20">
   <!-- intro: same splash as the app -->
-  <div data-intro class="fixed inset-0 z-[70] grid place-items-center bg-[radial-gradient(circle_at_50%_40%,#13245a_0%,#050816_70%)] motion-reduce:hidden">
+  <!-- the wipe: the frame slides up while its content slides down by as much, so the content holds still and its bottom edge sweeps up -->
+  <div data-intro class="fixed inset-0 z-[70] overflow-hidden will-change-transform motion-reduce:hidden">
+    <div data-intro-inner class="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_50%_40%,#13245a_0%,#050816_70%)] will-change-transform">
     <div class="relative flex flex-col items-center gap-10">
       <div data-intro-glow class="pointer-events-none absolute left-1/2 top-16 h-64 w-[30rem] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/15 blur-3xl"></div>
       <div data-intro-logo class="relative"><app-logo size="lg"></app-logo></div>
@@ -10,6 +12,7 @@
         </span>
         <p class="text-sm font-semibold text-slate-400">اكسب النقاط واستبدلها بمنتجات</p>
       </div>
+    </div>
     </div>
   </div>
 

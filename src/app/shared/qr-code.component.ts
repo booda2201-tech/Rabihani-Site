@@ -1,6 +1,5 @@
 import { NgIf } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core';
-import * as QRCode from 'qrcode';
 import { injectIsBrowser } from './platform';
 
 @Component({
@@ -23,14 +22,19 @@ export class QrCodeComponent implements OnChanges {
 
   ngOnChanges(): void {
     if (!this.browser) return;
-    QRCode.toDataURL(this.value, {
-      margin: 1,
-      width: 512,
-      errorCorrectionLevel: 'M',
-      color: { dark: this.dark, light: this.light },
-    }).then((url) => {
-      this.src = url;
-      this.cdr.markForCheck();
-    });
+    // separate chunk: the encoder is not needed for the first paint
+    import('qrcode')
+      .then((QRCode) =>
+        QRCode.toDataURL(this.value, {
+          margin: 1,
+          width: 512,
+          errorCorrectionLevel: 'M',
+          color: { dark: this.dark, light: this.light },
+        }),
+      )
+      .then((url) => {
+        this.src = url;
+        this.cdr.markForCheck();
+      });
   }
 }

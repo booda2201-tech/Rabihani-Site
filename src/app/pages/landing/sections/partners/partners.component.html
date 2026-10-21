@@ -40,7 +40,7 @@
       <div #track class="flex w-max">
         <ng-container *ngFor="let copy of [0, 1]">
           <figure *ngFor="let ad of ads" class="ml-5 h-44 w-80 shrink-0 overflow-hidden rounded-3xl bg-card ring-1 ring-white/10 sm:h-52 sm:w-96" [attr.aria-hidden]="copy === 1">
-            <img [src]="ad.imageUrl" [alt]="ad.title" class="h-full w-full object-cover transition duration-700 hover:scale-105" loading="lazy" />
+            <img [src]="ad.imageUrl" [alt]="ad.title" class="h-full w-full object-cover transition duration-700 hover:scale-105" loading="lazy" decoding="async" />
           </figure>
         </ng-container>
       </div>
