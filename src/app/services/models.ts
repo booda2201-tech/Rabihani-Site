@@ -35,7 +35,7 @@ export interface AuctionRoom {
 }
 
 export interface ResetPasswordPayload {
-  email: string;
+  emailOrPhone: string;
   token: string;
   newPassword: string;
   confirmPassword: string;

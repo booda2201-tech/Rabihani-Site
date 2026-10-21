@@ -27,6 +27,32 @@ export function categoryLabel(a: AuctionRoom): string {
   );
 }
 
+/** The most expensive live prize: kept secret by the curiosity section. */
+export function hiddenPrize(list: AuctionRoom[]): AuctionRoom | undefined {
+  return list.reduce<AuctionRoom | undefined>((best, a) => (!best || a.product.price > best.product.price ? a : best), undefined);
+}
+
+/**
+ * A mix that pulls people in: the priciest prize of each category in turn, then the next priciest.
+ * `excludeId` is left out unless nothing else is left.
+ */
+export function cocktail(list: AuctionRoom[], size: number, excludeId?: number): AuctionRoom[] {
+  const ranked = [...list].sort((a, b) => b.product.price - a.product.price);
+  const pool = ranked.length > size ? ranked.filter((a) => a.id !== excludeId) : ranked;
+  const byCategory = new Map<number, AuctionRoom[]>();
+  pool.forEach((a) => byCategory.set(a.product.categoryId, [...(byCategory.get(a.product.categoryId) ?? []), a]));
+  const queues = Array.from(byCategory.values());
+
+  const picked: AuctionRoom[] = [];
+  while (picked.length < size && queues.some((q) => q.length)) {
+    for (const q of queues) {
+      const next = q.shift();
+      if (next && picked.length < size) picked.push(next);
+    }
+  }
+  return picked;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PrizesService {
   /** `null` while loading. */
@@ -43,13 +69,7 @@ export class PrizesService {
 
   /** The most expensive live prize: the curiosity hook. */
   readonly featured$: Observable<AuctionRoom | null | undefined> = this.auctions$.pipe(
-    map((list) => {
-      if (list === null) return undefined;
-      return list.reduce<AuctionRoom | null>(
-        (best, a) => (!best || a.product.price > best.product.price ? a : best),
-        null,
-      );
-    }),
+    map((list) => (list === null ? undefined : hiddenPrize(list) ?? null)),
     shareReplay(1),
   );
 

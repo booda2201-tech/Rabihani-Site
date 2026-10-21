@@ -8,7 +8,7 @@ export const SITE_NAME = 'ربحني';
 export const SITE_DESCRIPTION =
   'ربحني تطبيق مصري بيخليك تكسب نقاط من كل مشترياتك عند الشركات المشاركة، وتزايد بيها على موبايلات وإلكترونيات وأجهزة منزلية حقيقية. حمّل التطبيق مجانًا على Android و iOS.';
 
-/** Relative to API_BASE_URL. Expects `ResetPasswordPayload`; email + token arrive in the emailed link's query string. */
+/** Relative to API_BASE_URL. Expects `ResetPasswordPayload`; emailOrPhone + token arrive in the link's query string. */
 export const RESET_PASSWORD_PATH = 'Auth/reset-password';
 
 /** Egypt */
@@ -17,13 +17,13 @@ export const COUNTRY_ID = 3;
 export const CURRENCY_LABEL = 'جنيه';
 
 /**
- * Store links live here only, so swapping them when the stores go live is a one-line change.
- * `qr` empty means: encode this page's download section.
+ * Store links live here only.
+ * `qr` matches the printed QR codes: /download sends phones to their store and desktops to the download section.
  */
 export const DOWNLOAD_LINKS = {
-  android: '#download-android',
-  ios: '#download-ios',
-  qr: '',
+  android: 'https://play.google.com/store/apps/details?id=hendal.rabhny.mazad',
+  ios: 'https://apps.apple.com/eg/app/%D8%B1%D8%A8%D8%AD%D9%86%D9%8A/id6813184088',
+  qr: `${SITE_URL}/download/`,
 };
 
 export interface CategoryFilter {

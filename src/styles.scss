@@ -69,6 +69,13 @@
   }
 }
 
+/* set by LandingComponent on sections outside the viewport */
+[data-offscreen] *,
+[data-offscreen] *::before,
+[data-offscreen] *::after {
+  animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

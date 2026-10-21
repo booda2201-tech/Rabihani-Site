@@ -4,11 +4,14 @@ import { Subscription } from 'rxjs';
 import { MOTION_OK, ScrollTrigger, gsap, prefersReducedMotion, queueScrollRefresh } from '../../../../animations/gsap';
 import { CATEGORY_FILTERS, CURRENCY_LABEL, CategoryFilter } from '../../../../config/site.config';
 import { AuctionRoom } from '../../../../services/models';
-import { PrizesService, categoryLabel } from '../../../../services/prizes.service';
+import { PrizesService, categoryLabel, cocktail, hiddenPrize } from '../../../../services/prizes.service';
 import { CountdownComponent } from '../../../../shared/countdown.component';
 import { IconComponent } from '../../../../shared/icon.component';
 import { injectIsBrowser } from '../../../../shared/platform';
 import { PrizeOrbit } from '../../../../three/prize-orbit/prize-orbit';
+
+/** The hall is a teaser, not a catalogue: the rest is only visible in the app. */
+const TEASER_SIZE = 4;
 
 @Component({
   selector: 'app-prize-hall',
@@ -25,6 +28,13 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
   auctions: AuctionRoom[] | null = null;
   active: number | null = null;
   slide = 0;
+  /** Matching the active filter. */
+  visibleAuctions: AuctionRoom[] = [];
+  /** The teaser picked from them. */
+  shownAuctions: AuctionRoom[] = [];
+  /** A few of the ones left out, as blurred thumbnails. */
+  peek: AuctionRoom[] = [];
+  private shownIds = new Set<number>();
   readonly filters = CATEGORY_FILTERS;
   readonly currency = CURRENCY_LABEL;
   readonly categoryLabel = categoryLabel;
@@ -62,6 +72,7 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
 
     this.sub = this.prizes.auctions$.subscribe((list) => {
       this.auctions = list;
+      this.recompute();
       this.cdr.detectChanges();
       if (list?.length) this.zone.runOutsideAngular(() => this.enterFromDepth());
       queueScrollRefresh();
@@ -82,25 +93,31 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
     return (this.auctions ?? []).filter((a) => f.id === null || a.product.categoryId === f.id).length;
   }
 
-  get visibleAuctions(): AuctionRoom[] {
-    return (this.auctions ?? []).filter((a) => this.matches(a));
+  /** Live auctions in the active tab that are not on screen: the reason to open the app. */
+  get moreInApp(): number {
+    return this.visibleAuctions.length - this.shownAuctions.length;
   }
 
-  get visibleCount(): number {
-    return this.visibleAuctions.length;
+  private recompute(): void {
+    const all = this.auctions ?? [];
+    const secret = hiddenPrize(all);
+    this.visibleAuctions = all.filter((a) => this.matches(a));
+    this.shownAuctions = cocktail(this.visibleAuctions, TEASER_SIZE, secret?.id);
+    this.shownIds = new Set(this.shownAuctions.map((a) => a.id));
+    this.peek = this.visibleAuctions.filter((a) => !this.shownIds.has(a.id) && a.id !== secret?.id).slice(0, 3);
   }
 
   /** Mobile carousel: which card is centred. */
   onSwipe(): void {
     const el = this.grid?.nativeElement;
-    const card = el?.querySelector<HTMLElement>('[data-card]:not(.hidden)');
+    const card = el?.querySelector<HTMLElement>('[data-card]');
     if (!el || !card) return;
     const step = card.offsetWidth + parseFloat(getComputedStyle(el).columnGap || '0');
     this.slide = Math.round(Math.abs(el.scrollLeft) / step);
   }
 
   goTo(i: number): void {
-    const card = this.grid?.nativeElement.querySelectorAll<HTMLElement>('[data-card]:not(.hidden)')[i];
+    const card = this.grid?.nativeElement.querySelectorAll<HTMLElement>('[data-card]')[i];
     card?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }
 
@@ -114,6 +131,7 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
 
     const apply = () => {
       this.active = id;
+      this.recompute();
       this.slide = 0;
       grid?.scrollTo({ left: 0 });
       this.cdr.detectChanges();
@@ -129,7 +147,7 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
     const cards = grid.querySelectorAll<HTMLElement>('[data-card]');
     this.zone.runOutsideAngular(() => {
       gsap.killTweensOf(cards);
-      gsap.to(grid.querySelectorAll('[data-card]:not(.hidden)'), {
+      gsap.to(grid.querySelectorAll('[data-card]'), {
         opacity: 0,
         y: 12,
         duration: 0.18,
@@ -137,7 +155,7 @@ export class PrizeHallComponent implements AfterViewInit, OnDestroy {
         onComplete: () => {
           apply();
           gsap.fromTo(
-            grid.querySelectorAll('[data-card]:not(.hidden)'),
+            grid.querySelectorAll('[data-card]'),
             { opacity: 0, y: 24 },
             { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out', stagger: 0.06, clearProps: 'opacity,transform' },
           );

@@ -49,7 +49,7 @@ export class ResetPasswordComponent implements AfterViewInit, OnDestroy {
   @ViewChild('card', { static: true }) card!: ElementRef<HTMLElement>;
 
   readonly rules = PASSWORD_RULES;
-  readonly email: string;
+  readonly emailOrPhone: string;
   private readonly token: string;
 
   state: PageState;
@@ -77,9 +77,9 @@ export class ResetPasswordComponent implements AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
   ) {
     const params = route.snapshot.queryParamMap;
-    this.email = params.get('email') ?? '';
+    this.emailOrPhone = params.get('emailOrPhone') ?? params.get('email') ?? params.get('phone') ?? '';
     this.token = params.get('token') ?? '';
-    this.state = this.email && this.token ? 'form' : 'invalid-link';
+    this.state = this.emailOrPhone && this.token ? 'form' : 'invalid-link';
   }
 
   get password(): string {
@@ -134,7 +134,7 @@ export class ResetPasswordComponent implements AfterViewInit, OnDestroy {
     const { newPassword, confirmPassword } = this.form.getRawValue();
 
     this.api
-      .resetPassword({ email: this.email, token: this.token, newPassword, confirmPassword })
+      .resetPassword({ emailOrPhone: this.emailOrPhone, token: this.token, newPassword, confirmPassword })
       .pipe(
         timeout(20000),
         finalize(() => {

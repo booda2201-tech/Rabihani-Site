@@ -47,9 +47,9 @@
       *ngIf="auctions?.length"
       #grid
       (scroll)="onSwipe()"
-      class="relative -mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-2 pt-2 [perspective:1400px] [scrollbar-width:none] sm:mx-0 sm:mt-14 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:p-0 lg:grid-cols-3 xl:grid-cols-4 [&::-webkit-scrollbar]:hidden"
+      class="relative -mx-5 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-px-5 px-5 pb-2 pt-2 [perspective:1400px] [scrollbar-width:none] sm:mx-auto sm:mt-14 sm:grid sm:max-w-3xl sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:p-0 xl:max-w-none xl:grid-cols-4 [&::-webkit-scrollbar]:hidden"
     >
-      <div *ngFor="let a of auctions; trackBy: trackById" data-card [class.hidden]="!matches(a)" [attr.data-flip-id]="a.id" class="w-[86%] max-w-[22rem] shrink-0 snap-center [transform-style:preserve-3d] sm:w-auto sm:max-w-none">
+      <div *ngFor="let a of shownAuctions; trackBy: trackById" data-card [attr.data-flip-id]="a.id" class="w-[86%] max-w-[22rem] shrink-0 snap-center [transform-style:preserve-3d] sm:w-auto sm:max-w-none">
         <article
           class="group relative flex h-full flex-col overflow-hidden rounded-[2rem] bg-card p-4 ring-1 ring-white/[0.06] transition duration-500 hover:-translate-y-1.5 hover:ring-gold/40 hover:shadow-glow-gold"
         >
@@ -89,9 +89,9 @@
       </div>
     </div>
 
-    <div *ngIf="visibleCount > 1" class="mt-5 flex items-center justify-center gap-1.5 sm:hidden" aria-hidden="true">
+    <div *ngIf="shownAuctions.length > 1" class="mt-5 flex items-center justify-center gap-1.5 sm:hidden" aria-hidden="true">
       <button
-        *ngFor="let a of visibleAuctions; let i = index; trackBy: trackById"
+        *ngFor="let a of shownAuctions; let i = index; trackBy: trackById"
         type="button"
         tabindex="-1"
         class="h-2 rounded-full transition-all duration-300"
@@ -100,6 +100,31 @@
       ></button>
     </div>
 
-    <p *ngIf="auctions?.length && !visibleCount" class="mt-10 text-center font-semibold text-slate-400">مفيش مزادات في القسم ده دلوقتي. جرّب قسم تاني.</p>
+    <div *ngIf="moreInApp > 0" class="mt-10 flex justify-center sm:mt-14">
+      <a
+        href="#download"
+        class="group flex w-full max-w-sm flex-col items-center gap-4 rounded-[2rem] bg-white/[0.03] p-5 text-center ring-1 ring-white/10 transition hover:bg-white/[0.05] hover:ring-gold/40 sm:w-auto sm:max-w-none sm:flex-row sm:gap-6 sm:rounded-full sm:py-2.5 sm:pl-2.5 sm:pr-3 sm:text-right"
+      >
+        <span class="flex items-center gap-3">
+          <span class="flex -space-x-3 space-x-reverse" aria-hidden="true">
+            <span *ngFor="let p of peek" class="grid h-11 w-11 place-items-center overflow-hidden rounded-full bg-card ring-2 ring-ink">
+              <img [src]="p.product.imageUrl" alt="" class="h-8 w-8 object-contain opacity-80 blur-[1.5px]" loading="lazy" />
+            </span>
+          </span>
+          <span>
+            <span class="block text-base font-black text-white">
+              <span class="text-gold-gradient" dir="ltr">+{{ moreInApp }}</span> مزاد تاني {{ moreInApp === 1 ? 'شغّال' : 'شغّالين' }} دلوقتي
+            </span>
+            <span class="block text-xs font-semibold text-slate-400">اللي شايفه ده جزء بس… الباقي جوه التطبيق</span>
+          </span>
+        </span>
+        <span class="btn-gold w-full px-5 py-2.5 text-sm sm:w-auto sm:rounded-full">
+          حمّل وشوفهم
+          <app-icon name="arrow" class="h-4 w-4 transition group-hover:-translate-x-1"></app-icon>
+        </span>
+      </a>
+    </div>
+
+    <p *ngIf="auctions?.length && !visibleAuctions.length" class="mt-10 text-center font-semibold text-slate-400">مفيش مزادات في القسم ده دلوقتي. جرّب قسم تاني.</p>
   </div>
 </section>

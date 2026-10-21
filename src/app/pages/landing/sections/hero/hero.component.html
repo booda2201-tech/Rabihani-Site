@@ -21,10 +21,11 @@
     <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-ink"></div>
   </div>
 
-  <div class="container-x relative z-10 grid min-h-[calc(100svh-6rem)] items-center gap-4 lg:grid-cols-[1.05fr_1fr] lg:gap-8">
+  <!-- phones: badge and headline, then the phone, then the rest of the copy (the copy wrapper is display:contents there) -->
+  <div class="container-x relative z-10 grid min-h-[calc(100svh-6rem)] items-center pb-16 lg:grid-cols-[1.05fr_1fr] lg:gap-8 lg:pb-0">
     <!-- copy -->
-    <div data-hero-content class="relative z-10 order-2 pb-20 text-center lg:order-1 lg:pb-0 lg:text-right">
-      <div data-hero-fade class="mb-7 inline-flex items-center gap-2.5 rounded-full bg-white/[0.04] py-1.5 pl-4 pr-1.5 text-sm font-bold text-slate-200 ring-1 ring-white/10 backdrop-blur">
+    <div data-hero-content class="contents text-center lg:relative lg:z-10 lg:order-1 lg:block lg:text-right">
+      <div data-hero-fade class="order-1 mb-5 inline-flex items-center justify-self-center lg:mb-7 lg:justify-self-auto gap-2.5 rounded-full bg-white/[0.04] py-1.5 pl-4 pr-1.5 text-sm font-bold text-slate-200 ring-1 ring-white/10 backdrop-blur">
         <span class="flex items-center gap-1.5 rounded-full bg-red-500/90 px-2.5 py-0.5 text-xs font-black text-white">
           <i class="h-1.5 w-1.5 animate-live-dot rounded-full bg-white"></i>مباشر
         </span>
@@ -32,13 +33,13 @@
         <ng-template #liveFallback>مزادات شغّالة دلوقتي</ng-template>
       </div>
 
-      <h1 class="text-[2.6rem] font-black leading-[1.15] tracking-tight text-white sm:text-5xl lg:text-[3.4rem] xl:text-[4rem] 2xl:text-[4.5rem]">
+      <h1 class="order-2 text-[2.35rem] font-black leading-[1.15] tracking-tight text-white sm:text-5xl lg:text-[3.4rem] xl:text-[4rem] 2xl:text-[4.5rem]">
         <span class="-mb-[0.3em] block overflow-hidden"><span data-line class="block pb-[0.3em]">اكسب النقاط.</span></span>
         <span class="-mb-[0.3em] block overflow-hidden"><span data-line class="block pb-[0.3em] text-bid">زايد.</span></span>
         <span class="-mb-[0.15em] block overflow-hidden"><span data-line class="block pb-[0.3em] text-gold-gradient">خد المنتج.</span></span>
       </h1>
 
-      <p data-hero-fade class="mx-auto mt-6 max-w-lg text-lg font-semibold leading-relaxed text-slate-300 sm:text-xl lg:mx-0">
+      <p data-hero-fade class="order-4 mx-auto mt-2 max-w-lg lg:mt-6 text-lg font-semibold leading-relaxed text-slate-300 sm:text-xl lg:mx-0">
         جوايز قيمتها بالآلاف…
         <span class="text-white">والمزايدة بتبدأ من
           <span class="font-black text-gold-light"><ng-container *ngIf="stats; else fewPoints"><span class="tabular-nums" [attr.data-count]="stats.minStart">0</span> نقطة</ng-container></span>
@@ -48,7 +49,7 @@
         <span class="mt-1 block text-slate-400">لو دخلت دلوقتي… توصل للجايزة؟</span>
       </p>
 
-      <div data-hero-fade class="mt-9 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
+      <div data-hero-fade class="order-5 mt-8 flex flex-col items-center gap-4 lg:mt-9 sm:flex-row sm:justify-center lg:justify-start">
         <span class="relative inline-flex rounded-2xl">
           <span appPulseRing class="rounded-2xl bg-bid"></span>
           <a href="#download" class="btn-gold group relative px-8 py-4 text-lg motion-reduce:shadow-glow-gold">
@@ -62,12 +63,12 @@
         </a>
       </div>
 
-      <div data-hero-fade class="mt-6 flex flex-col items-center gap-2 lg:items-start">
+      <div data-hero-fade class="order-6 mt-6 flex flex-col items-center gap-2 lg:items-start">
         <app-store-buttons [compact]="true"></app-store-buttons>
         <span class="text-xs font-semibold text-slate-500">مجاني على Android و iOS</span>
       </div>
 
-      <dl data-hero-fade class="mx-auto mt-10 grid max-w-lg grid-cols-3 divide-x divide-x-reverse divide-white/10 rounded-2xl bg-white/[0.03] py-4 ring-1 ring-white/10 backdrop-blur lg:mx-0">
+      <dl data-hero-fade class="order-7 mx-auto mt-10 grid w-full max-w-lg grid-cols-3 divide-x divide-x-reverse divide-white/10 rounded-2xl bg-white/[0.03] py-4 ring-1 ring-white/10 backdrop-blur lg:mx-0">
         <div class="px-3 text-center">
           <dt class="text-xs font-bold text-slate-400">مزاد مباشر</dt>
           <dd class="mt-1 text-2xl font-black text-white tabular-nums"><span *ngIf="stats; else dash" [attr.data-count]="stats.live">0</span></dd>
@@ -83,20 +84,30 @@
       </dl>
       <ng-template #dash><span class="text-slate-600">–</span></ng-template>
 
-      <div *ngIf="stats" data-hero-fade class="mt-6 flex flex-col items-center gap-2 sm:hidden">
+      <div *ngIf="stats" data-hero-fade class="order-8 mt-6 flex flex-col items-center gap-2 sm:hidden">
         <span class="flex items-center gap-1.5 text-xs font-bold text-slate-400"><app-icon name="clock" class="h-4 w-4 text-red-400"></app-icon>أقرب مزاد بيقفل بعد</span>
         <app-countdown [end]="stats.nextEnd"></app-countdown>
       </div>
     </div>
 
     <!-- stage -->
-    <div class="relative order-1 h-[44svh] min-h-[320px] lg:order-2 lg:h-[84svh]">
-      <div data-glow class="absolute inset-[12%] rounded-full bg-[radial-gradient(circle,rgba(212,175,55,.22)_0%,rgba(59,130,246,.12)_45%,transparent_70%)] blur-2xl"></div>
-      <div #stage class="relative h-full w-full" aria-hidden="true"></div>
+    <div class="relative order-3 mt-6 h-[37rem] sm:h-[35rem] lg:order-2 lg:mt-0 lg:h-[84svh]">
+      <div data-glow class="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,rgba(212,175,55,.24)_0%,rgba(59,130,246,.14)_45%,transparent_70%)] blur-2xl"></div>
+      <div data-stand class="absolute bottom-[3%] left-1/2 h-14 w-[62%] max-w-[22rem] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,.45)_0%,rgba(59,130,246,.18)_45%,transparent_72%)] blur-md"></div>
+
+      <div class="absolute inset-0 flex items-center justify-center pb-14 [perspective:1600px] sm:pb-0">
+        <div class="scale-[0.95] lg:scale-100 xl:scale-[1.06] 2xl:scale-[1.15] [@media(min-width:1024px)_and_(max-height:760px)]:scale-[0.9]">
+          <div data-phone-float class="will-change-transform">
+            <div data-phone class="will-change-transform [transform-style:preserve-3d]">
+              <app-live-auction-phone [prizes]="showcase"></app-live-auction-phone>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div data-float-layer class="pointer-events-none absolute inset-0">
         <!-- points landed -->
-        <div data-float class="absolute inset-x-0 bottom-0 flex justify-center sm:inset-x-auto sm:bottom-auto sm:right-[2%] sm:top-[10%] sm:block">
+        <div data-float class="absolute inset-x-0 bottom-0 flex justify-center sm:inset-x-auto sm:bottom-auto sm:right-0 sm:top-[12%] sm:block lg:right-[-4%]">
           <div data-depth="1.4" class="flex items-center gap-2.5 rounded-2xl bg-card/85 p-2 pl-4 shadow-2xl ring-1 ring-white/10 sm:gap-3 lg:backdrop-blur-xl sm:p-3 sm:pl-5">
             <span class="grid h-8 w-8 place-items-center rounded-xl bg-emerald-500/15 text-emerald-400 sm:h-10 sm:w-10"><app-icon name="check" [stroke]="2.4" class="h-4 w-4 sm:h-5 sm:w-5"></app-icon></span>
             <span class="text-right">
@@ -115,7 +126,7 @@
         </div>
 
         <!-- closest deadline -->
-        <div data-float class="absolute bottom-[12%] left-[4%] hidden sm:block">
+        <div data-float class="absolute bottom-[3%] left-0 hidden sm:block lg:left-[-8%]">
           <div data-depth="0.9" class="rounded-2xl bg-card/85 p-3 shadow-2xl ring-1 ring-white/10 backdrop-blur-xl">
             <p class="mb-2 flex items-center gap-1.5 text-xs font-bold text-slate-400">
               <app-icon name="clock" class="h-4 w-4 text-red-400"></app-icon>

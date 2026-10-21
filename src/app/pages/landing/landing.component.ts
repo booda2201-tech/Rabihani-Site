@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy } from '@angular/core';
+import { whileVisible } from '../../animations/gsap';
 import { LogoComponent } from '../../shared/logo.component';
+import { injectIsBrowser } from '../../shared/platform';
 import { AppScreensComponent } from './sections/app-screens/app-screens.component';
 import { CuriosityComponent } from './sections/curiosity/curiosity.component';
 import { DownloadComponent } from './sections/download/download.component';
@@ -47,6 +49,25 @@ import { StickyCtaComponent } from './sticky-cta/sticky-cta.component';
     <app-sticky-cta></app-sticky-cta>
   `,
 })
-export class LandingComponent {
+export class LandingComponent implements AfterViewInit, OnDestroy {
   readonly year = new Date().getFullYear();
+
+  private readonly browser = injectIsBrowser();
+  private unwatch: (() => void)[] = [];
+
+  constructor(private host: ElementRef<HTMLElement>, private zone: NgZone) {}
+
+  /** CSS loops (live dots, scan lines…) freeze while their section is off screen; see `[data-offscreen]` in styles.scss. */
+  ngAfterViewInit(): void {
+    if (!this.browser) return;
+    this.zone.runOutsideAngular(() => {
+      this.host.nativeElement.querySelectorAll('main section').forEach((section) => {
+        this.unwatch.push(whileVisible(section, (visible) => section.toggleAttribute('data-offscreen', !visible)));
+      });
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.unwatch.forEach((stop) => stop());
+  }
 }

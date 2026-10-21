@@ -182,7 +182,8 @@
           "options": {
             "guessRoutes": false,
             "routes": [
-              "/"
+              "/",
+              "/download"
             ]
           },
           "configurations": {

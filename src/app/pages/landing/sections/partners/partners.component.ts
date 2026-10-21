@@ -1,7 +1,7 @@
 import { NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { MOTION_OK, gsap, queueScrollRefresh } from '../../../../animations/gsap';
+import { MOTION_OK, gsap, playWhileVisible, queueScrollRefresh } from '../../../../animations/gsap';
 import { PARTNERS, Partner } from '../../../../config/site.config';
 import { Advertisement } from '../../../../services/models';
 import { PrizesService } from '../../../../services/prizes.service';
@@ -74,7 +74,9 @@ export class PartnersComponent implements AfterViewInit, OnDestroy {
         const resume = () => gsap.to(tween, { timeScale: 1, duration: 0.5 });
         track.addEventListener('pointerenter', slow);
         track.addEventListener('pointerleave', resume);
+        const unwatch = playWhileVisible(track, tween);
         return () => {
+          unwatch();
           track.removeEventListener('pointerenter', slow);
           track.removeEventListener('pointerleave', resume);
         };

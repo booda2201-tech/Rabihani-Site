@@ -11,7 +11,7 @@ import { ClockService, CountdownParts, countdownParts } from '../services/clock.
     <ng-container *ngIf="clock.now$ | async as now">
       <ng-container *ngIf="parts(now) as p">
         <div *ngIf="variant === 'boxes'; else inline" class="flex gap-1.5 tabular-nums" role="timer" aria-live="off">
-          <div *ngFor="let unit of units(p)" class="flex min-w-[3rem] flex-col items-center rounded-xl bg-white/5 px-2 py-1.5 ring-1 ring-white/10">
+          <div *ngFor="let unit of units(p); trackBy: byLabel" class="flex min-w-[3rem] flex-col items-center rounded-xl bg-white/5 px-2 py-1.5 ring-1 ring-white/10">
             <span class="text-lg font-bold text-white">{{ unit.value }}</span>
             <span class="text-[10px] font-medium text-slate-400">{{ unit.label }}</span>
           </div>
@@ -34,6 +34,10 @@ export class CountdownComponent {
 
   parts(now: number): CountdownParts {
     return countdownParts(this.end, now);
+  }
+
+  byLabel(_: number, unit: { label: string }): string {
+    return unit.label;
   }
 
   pad(n: number): string {

@@ -1,5 +1,5 @@
 import { Directive, ElementRef, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { prefersReducedMotion } from '../animations/gsap';
+import { prefersReducedMotion, whileVisible } from '../animations/gsap';
 
 /**
  * Expanding halo behind a call-to-action. Same look as an animated `box-shadow` spread,
@@ -17,6 +17,8 @@ export class PulseRingDirective implements OnInit, OnDestroy {
 
   private animation?: Animation;
   private observer?: ResizeObserver;
+  private unwatch?: () => void;
+  private onScreen = true;
   private size = '';
 
   constructor(private el: ElementRef<HTMLElement>, private zone: NgZone) {}
@@ -26,11 +28,17 @@ export class PulseRingDirective implements OnInit, OnDestroy {
     this.zone.runOutsideAngular(() => {
       this.observer = new ResizeObserver(([entry]) => this.play(entry.contentRect.width, entry.contentRect.height));
       this.observer.observe(this.el.nativeElement);
+      this.unwatch = whileVisible(this.el.nativeElement, (visible) => {
+        this.onScreen = visible;
+        if (visible) this.animation?.play();
+        else this.animation?.pause();
+      });
     });
   }
 
   ngOnDestroy(): void {
     this.observer?.disconnect();
+    this.unwatch?.();
     this.animation?.cancel();
   }
 
@@ -52,5 +60,6 @@ export class PulseRingDirective implements OnInit, OnDestroy {
       { duration: 2200, iterations: Infinity },
     );
     this.animation.currentTime = time;
+    if (!this.onScreen) this.animation.pause();
   }
 }

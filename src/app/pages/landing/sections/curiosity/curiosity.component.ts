@@ -1,7 +1,7 @@
 import { NgIf } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone, OnDestroy, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { MOTION_OK, gsap, prefersReducedMotion, queueScrollRefresh } from '../../../../animations/gsap';
+import { MOTION_OK, gsap, playWhileVisible, prefersReducedMotion, queueScrollRefresh, whileVisible } from '../../../../animations/gsap';
 import { CURRENCY_LABEL } from '../../../../config/site.config';
 import { AuctionRoom } from '../../../../services/models';
 import { PrizesService } from '../../../../services/prizes.service';
@@ -28,6 +28,8 @@ export class CuriosityComponent implements AfterViewInit, OnDestroy {
   private ctx?: gsap.Context;
   private scramble?: number;
   private sub?: Subscription;
+  private onScreen = true;
+  private unwatch?: () => void;
 
   private readonly browser = injectIsBrowser();
 
@@ -43,6 +45,7 @@ export class CuriosityComponent implements AfterViewInit, OnDestroy {
     });
 
     this.zone.runOutsideAngular(() => {
+      this.unwatch = whileVisible(this.root.nativeElement, (visible) => (this.onScreen = visible));
       this.ctx = gsap.context(() => {
         gsap.matchMedia().add(MOTION_OK, () => {
           gsap.fromTo(
@@ -50,20 +53,22 @@ export class CuriosityComponent implements AfterViewInit, OnDestroy {
             { y: 60, rotate: -3, scale: 0.92 },
             { y: -30, rotate: 2, scale: 1, ease: 'none', scrollTrigger: { trigger: this.root.nativeElement, start: 'top bottom', end: 'bottom top', scrub: true } },
           );
-          gsap.to('[data-ring]', { rotate: 360, duration: 40, ease: 'none', repeat: -1 });
-          gsap.to('[data-qmark]', { y: -8, rotate: 4, duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+          const ring = gsap.to('[data-ring]', { rotate: 360, duration: 40, ease: 'none', repeat: -1 });
+          const qmark = gsap.to('[data-qmark]', { y: -8, rotate: 4, duration: 1.6, ease: 'sine.inOut', yoyo: true, repeat: -1 });
           gsap.from('[data-guess]', {
             y: 40,
             opacity: 0,
             stagger: 0.12,
             scrollTrigger: { trigger: this.root.nativeElement, start: 'top 70%' },
           });
+          return playWhileVisible(this.root.nativeElement, ring, qmark);
         });
       }, this.root.nativeElement);
     });
   }
 
   ngOnDestroy(): void {
+    this.unwatch?.();
     this.sub?.unsubscribe();
     clearInterval(this.scramble);
     this.ctx?.revert();
@@ -79,6 +84,7 @@ export class CuriosityComponent implements AfterViewInit, OnDestroy {
         .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
     const tick = () => {
+      if (!this.onScreen) return;
       this.price.nativeElement.textContent = random(PRICE_DIGITS);
       this.start.nativeElement.textContent = random(startDigits);
     };

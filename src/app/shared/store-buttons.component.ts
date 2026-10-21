@@ -11,6 +11,8 @@ import { DOWNLOAD_LINKS } from '../config/site.config';
     <div [ngClass]="compact ? 'flex flex-wrap gap-2' : 'grid w-full max-w-sm grid-cols-2 gap-2 sm:flex sm:w-auto sm:max-w-none sm:flex-wrap sm:gap-3'">
       <a
         [href]="links.android"
+        target="_blank"
+        rel="noopener"
         class="group flex items-center rounded-2xl bg-white text-ink shadow-lg transition hover:-translate-y-0.5 hover:shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-bid"
         [ngClass]="compact ? 'gap-3 px-3 py-2' : 'justify-center gap-2 px-3 py-2.5 sm:justify-start sm:gap-3 sm:px-5 sm:py-3'"
         aria-label="حمّل ربحني من Google Play"
@@ -28,6 +30,8 @@ import { DOWNLOAD_LINKS } from '../config/site.config';
       </a>
       <a
         [href]="links.ios"
+        target="_blank"
+        rel="noopener"
         class="group flex items-center rounded-2xl bg-black text-white ring-1 ring-white/20 shadow-lg transition hover:-translate-y-0.5 hover:shadow-glow focus:outline-none focus-visible:ring-2 focus-visible:ring-bid"
         [ngClass]="compact ? 'gap-3 px-3 py-2' : 'justify-center gap-2 px-3 py-2.5 sm:justify-start sm:gap-3 sm:px-5 sm:py-3'"
         aria-label="حمّل ربحني من App Store"
